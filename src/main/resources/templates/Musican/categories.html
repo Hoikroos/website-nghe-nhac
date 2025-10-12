@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản lý thể loại - Hệ thống quản lý nhạc</title>
-    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600;700&family=Open+Sans:wght@400;500;600&display=swap"
+        rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
     <style>
         :root {
             --background: #ffffff;
@@ -53,7 +57,7 @@
             min-height: 100vh;
         }
 
-        /* Sidebar styles - same as artists.html */
+        /* Sidebar styles */
         .sidebar {
             width: 280px;
             background: var(--sidebar);
@@ -62,7 +66,6 @@
             position: fixed;
             height: 100vh;
             overflow-y: auto;
-            transition: transform 0.3s ease;
         }
 
         .sidebar-header {
@@ -106,7 +109,6 @@
             color: var(--sidebar-foreground);
             text-decoration: none;
             transition: all 0.3s ease;
-            cursor: pointer;
         }
 
         .nav-item:hover {
@@ -163,7 +165,7 @@
 
         .main-header {
             display: flex;
-            justify-content: between;
+            justify-content: space-between;
             align-items: center;
             margin-bottom: 2rem;
             padding-bottom: 1rem;
@@ -239,7 +241,7 @@
 
         .category-header {
             display: flex;
-            justify-content: between;
+            justify-content: space-between;
             align-items: flex-start;
             margin-bottom: 1rem;
         }
@@ -277,7 +279,7 @@
 
         .category-stats {
             display: flex;
-            justify-content: between;
+            justify-content: space-between;
             align-items: center;
             padding-top: 1rem;
             border-top: 1px solid var(--border);
@@ -316,7 +318,7 @@
 
         .modal-header {
             display: flex;
-            justify-content: between;
+            justify-content: space-between;
             align-items: center;
             margin-bottom: 1.5rem;
         }
@@ -366,7 +368,7 @@
         .modal-actions {
             display: flex;
             gap: 1rem;
-            justify-content: end;
+            justify-content: flex-end;
         }
 
         /* Mobile responsive */
@@ -386,12 +388,7 @@
 
         @media (max-width: 768px) {
             .sidebar {
-                transform: translateX(-100%);
-                z-index: 999;
-            }
-
-            .sidebar.open {
-                transform: translateX(0);
+                display: none;
             }
 
             .main-content {
@@ -408,50 +405,155 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        .alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1rem;
+            border-radius: var(--border-radius);
+            font-size: 0.95rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-lg);
+            animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            width: 350px;
+            max-width: 90%;
+            z-index: 1000;
+            border-left: 4px solid;
+        }
+
+        .alert-success {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success-green-dark);
+            border-color: var(--success-green);
+        }
+
+        .alert-error {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger-red-dark);
+            border-color: var(--danger-red);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            cursor: pointer;
+            color: inherit;
+            opacity: 0.7;
+            transition: var(--transition);
+            padding: 0;
+            margin-left: 0.75rem;
+        }
+
+        .close-btn:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .alert.fade-out {
+            animation: fadeOut 0.3s ease forwards;
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+            to {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
     </style>
 </head>
+
 <body>
     <div class="dashboard-container">
-        <!-- Mobile Menu Button -->
-        <button class="mobile-menu-btn" onclick="toggleSidebar()">
+        <button class="mobile-menu-btn">
             <i class="fas fa-bars"></i>
         </button>
         <div th:replace="~{/layout/slidesbarMusican}"></div>
-        <!-- Main Content -->
         <main class="main-content">
             <div class="main-header">
                 <h1>Quản lý thể loại</h1>
-                <button class="btn btn-primary" onclick="openAddModal()">
+                <a th:href="@{/musican/categories/add}" class="btn btn-primary" onclick="openModal()">
                     <i class="fas fa-plus"></i>
                     Thêm thể loại
-                </button>
+                </a>
             </div>
-
-            <!-- Categories Grid -->
-            <div class="categories-grid" id="categoriesGrid">
-                <!-- Categories will be loaded here -->
+            <div class="categories-grid">
+                <div th:if="${message}" class="alert alert-success" role="alert">
+                    <span th:text="${message}"></span>
+                    <button type="button" class="close-btn">×</button>
+                </div>
+                <div th:if="${errorMessage}" class="alert alert-error" role="alert">
+                    <span th:text="${errorMessage}"></span>
+                    <button type="button" class="close-btn">×</button>
+                </div>
+                <div th:each="category : ${categories}" class="category-card">
+                    <div class="category-header">
+                        <div class="category-icon">
+                            <i class="fas fa-music"></i>
+                        </div>
+                        <div class="category-actions">
+                            <a th:href="@{/musican/categories/edit/{id}(id=${category.id})}"
+                                class="btn btn-sm btn-secondary" onclick="openModal()">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <form th:action="@{/musican/categories/delete/{id}(id=${category.id})}" method="post"
+                                class="delete-form">
+                                <button type="submit" class="btn btn-sm btn-danger delete-btn">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    <h3 class="category-title" th:text="${category.name}"></h3>
+                    <p class="category-description" th:text="${category.description} ?: 'Chưa có mô tả'"></p>
+                </div>
             </div>
         </main>
     </div>
 
     <!-- Add/Edit Category Modal -->
-    <div class="modal" id="categoryModal">
+    <div class="modal" id="categoryModal" th:classappend="${showModal} ? 'show' : ''">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title" id="modalTitle">Thêm thể loại mới</h3>
-                <button class="close-btn" onclick="closeModal()">&times;</button>
+                <h3 class="modal-title" th:text="${isEdit} ? 'Sửa thể loại' : 'Thêm thể loại mới'"></h3>
+                <button class="close-btn"
+                    onclick="document.getElementById('categoryModal').classList.remove('show')">&times;</button>
             </div>
-            <form class="modal-form" onsubmit="saveCategory(event)">
+            <form
+                th:action="${isEdit} ? @{/musican/categories/edit/{id}(id=${category.id})} : @{/musican/categories/add}"
+                method="post">
                 <div class="form-group">
                     <label for="categoryName">Tên thể loại *</label>
-                    <input type="text" id="categoryName" required>
+                    <input type="text" id="categoryName" name="name" th:value="${category.name}" required>
                 </div>
                 <div class="form-group">
                     <label for="categoryDescription">Mô tả</label>
-                    <textarea id="categoryDescription" placeholder="Nhập mô tả thể loại..."></textarea>
+                    <textarea id="categoryDescription" name="description" th:text="${category.description}"></textarea>
                 </div>
                 <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Hủy</button>
+                    <a th:href="@{/musican/categories}" class="btn btn-secondary">Hủy</a>
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-save"></i>
                         Lưu
@@ -461,218 +563,52 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        let categories = [];
-        let editingCategoryId = null;
-
-        // Sample data
-        const sampleCategories = [
-            {
-                id: 1,
-                name: "Pop",
-                description: "Nhạc pop hiện đại với giai điệu bắt tai và dễ nghe"
-            },
-            {
-                id: 2,
-                name: "Rock",
-                description: "Nhạc rock mạnh mẽ với guitar và drums nổi bật"
-            },
-            {
-                id: 3,
-                name: "Jazz",
-                description: "Nhạc jazz với sự ứng tấu và tự do trong biểu diễn"
-            },
-            {
-                id: 4,
-                name: "Classical",
-                description: "Nhạc cổ điển với dàn nhạc giao hưởng"
-            },
-            {
-                id: 5,
-                name: "Hip Hop",
-                description: "Nhạc hip hop với rap và beat mạnh mẽ"
-            }
-        ];
-
-        // Initialize
-        function init() {
-            checkAuth();
-            loadUserInfo();
-            
-            const savedCategories = localStorage.getItem('categories');
-            if (savedCategories) {
-                categories = JSON.parse(savedCategories);
-            } else {
-                categories = sampleCategories;
-                saveCategoriesToStorage();
-            }
-            
-            renderCategories();
-        }
-
-        // Authentication functions
-        // function checkAuth() {
-        //     const currentUser = localStorage.getItem('currentUser');
-        //     if (!currentUser) {
-        //         window.location.href = 'login.html';
-        //         return;
-        //     }
-        // }
-
-        // function loadUserInfo() {
-        //     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-            
-        //     if (currentUser.username) {
-        //         document.getElementById('userName').textContent = currentUser.displayName || currentUser.username;
-        //         document.getElementById('userRole').textContent = getRoleText(currentUser.role);
-        //         document.getElementById('userAvatar').textContent = (currentUser.displayName || currentUser.username).charAt(0).toUpperCase();
-        //     }
-        // }
-
-        // function getRoleText(role) {
-        //     switch(role) {
-        //         case 'ADMIN': return 'Quản trị viên';
-        //         case 'MUSICIAN': return 'Nhạc sĩ';
-        //         case 'USER': return 'Người dùng';
-        //         default: return 'Người dùng';
-        //     }
-        // }
-
-        // function logout() {
-        //     if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
-        //         localStorage.removeItem('currentUser');
-        //         window.location.href = 'login.html';
-        //     }
-        // }
-
-        // Sidebar functions
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('open');
-        }
-
-        // Categories management
-        function renderCategories() {
-            const grid = document.getElementById('categoriesGrid');
-            
-            grid.innerHTML = categories.map(category => `
-                <div class="category-card">
-                    <div class="category-header">
-                        <div class="category-icon">
-                            <i class="fas fa-music"></i>
-                        </div>
-                        <div class="category-actions">
-                            <button class="btn btn-sm btn-secondary" onclick="editCategory(${category.id})">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn btn-sm btn-danger" onclick="deleteCategory(${category.id})">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <h3 class="category-title">${category.name}</h3>
-                    <p class="category-description">${category.description || 'Chưa có mô tả'}</p>
-                    <div class="category-stats">
-                        <span class="category-count">${getArtistCount(category.name)} nghệ sĩ</span>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function getArtistCount(categoryName) {
-            // Simulate getting artist count for this category
-            const artists = JSON.parse(localStorage.getItem('artists') || '[]');
-            return artists.filter(artist => artist.category === categoryName.toLowerCase()).length;
-        }
-
-        // Modal functions
-        function openAddModal() {
-            editingCategoryId = null;
-            document.getElementById('modalTitle').textContent = 'Thêm thể loại mới';
-            document.getElementById('categoryName').value = '';
-            document.getElementById('categoryDescription').value = '';
+        function openModal() {
             document.getElementById('categoryModal').classList.add('show');
         }
 
-        function editCategory(id) {
-            const category = categories.find(c => c.id === id);
-            if (!category) return;
-            
-            editingCategoryId = id;
-            document.getElementById('modalTitle').textContent = 'Sửa thông tin thể loại';
-            document.getElementById('categoryName').value = category.name;
-            document.getElementById('categoryDescription').value = category.description || '';
-            document.getElementById('categoryModal').classList.add('show');
-        }
+        document.addEventListener('DOMContentLoaded', function () {
+            // Handle delete button clicks
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const form = this.closest('.delete-form');
+                    Swal.fire({
+                        title: 'Bạn có chắc chắn muốn xóa?',
+                        text: 'Hành động này không thể hoàn tác!',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#ef4444',
+                        cancelButtonColor: '#6b7280',
+                        confirmButtonText: 'Xóa',
+                        cancelButtonText: 'Hủy'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            });
 
-        function closeModal() {
-            document.getElementById('categoryModal').classList.remove('show');
-            editingCategoryId = null;
-        }
+            document.querySelectorAll('.close-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                    const alert = this.closest('.alert');
+                    alert.classList.add('fade-out');
+                    setTimeout(() => alert.remove(), 300);
+                });
+            });
 
-        function saveCategory(event) {
-            event.preventDefault();
-            
-            const name = document.getElementById('categoryName').value.trim();
-            const description = document.getElementById('categoryDescription').value.trim();
-            
-            if (!name) {
-                alert('Vui lòng nhập tên thể loại!');
-                return;
-            }
-            
-            if (editingCategoryId) {
-                // Update existing category
-                const categoryIndex = categories.findIndex(c => c.id === editingCategoryId);
-                if (categoryIndex !== -1) {
-                    categories[categoryIndex] = {
-                        ...categories[categoryIndex],
-                        name,
-                        description
-                    };
-                }
-            } else {
-                // Add new category
-                const newCategory = {
-                    id: Date.now(),
-                    name,
-                    description
-                };
-                categories.push(newCategory);
-            }
-            
-            saveCategoriesToStorage();
-            renderCategories();
-            closeModal();
-            
-            alert(editingCategoryId ? 'Cập nhật thể loại thành công!' : 'Thêm thể loại thành công!');
-        }
-
-        function deleteCategory(id) {
-            const category = categories.find(c => c.id === id);
-            if (!category) return;
-            
-            if (confirm(`Bạn có chắc chắn muốn xóa thể loại "${category.name}"?`)) {
-                categories = categories.filter(c => c.id !== id);
-                saveCategoriesToStorage();
-                renderCategories();
-                alert('Xóa thể loại thành công!');
-            }
-        }
-
-        function saveCategoriesToStorage() {
-            localStorage.setItem('categories', JSON.stringify(categories));
-        }
-
-        // Close modal when clicking outside
-        document.getElementById('categoryModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeModal();
-            }
+            // Tự động ẩn thông báo sau 5 giây
+            document.querySelectorAll('.alert').forEach(alert => {
+                setTimeout(() => {
+                    alert.classList.add('fade-out');
+                    setTimeout(() => alert.remove(), 300);
+                }, 2000);
+            });
         });
-
-        // Initialize when page loads
-        window.addEventListener('load', init);
     </script>
 </body>
+
 </html>

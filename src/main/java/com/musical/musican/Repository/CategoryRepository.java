@@ -8,4 +8,5 @@ import com.musical.musican.Model.Entity.Category;
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Integer> {
     Category findByName(String name);
+    boolean existsByName(String name);
 }
