@@ -1,0 +1,80 @@
+<nav class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <h1>🎵 MusicManager</h1>
+        <p>Hệ thống quản lý nhạc</p>
+    </div>
+
+    <div class="sidebar-nav">
+        <div class="nav-group">
+            <div class="nav-group-title">Tổng quan</div>
+            <a th:href="@{/musican/dashboard}" class="nav-item">
+                <i class="fas fa-home"></i>
+                Dashboard
+            </a>
+            <a th:href="@{/musican/search}" class="nav-item">
+                <i class="fas fa-search"></i>
+                Tìm kiếm
+            </a>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-group-title">Quản lý</div>
+            <a th:href="@{/musican/artists}" class="nav-item">
+                <i class="fas fa-microphone"></i>
+                Nghệ sĩ
+            </a>
+            <a th:href="@{/musican/albums}" class="nav-item">
+                <i class="fas fa-compact-disc"></i>
+                Album
+            </a>
+            <a th:href="@{/musican/tracks}" class="nav-item">
+                <i class="fas fa-music"></i>
+                Bài hát
+            </a>
+            <a th:href="@{/musican/playlists}" class="nav-item">
+                <i class="fas fa-list"></i>
+                Playlist
+            </a>
+            <a th:href="@{/musican/categories}" class="nav-item">
+                <i class="fas fa-tags"></i>
+                Thể loại
+            </a>
+        </div>
+
+        <div class="nav-group">
+            <div class="nav-group-title">Cá nhân</div>
+            <a th:href="@{/musican/profile}" class="nav-item">
+                <i class="fas fa-user"></i>
+                Hồ sơ
+            </a>
+        </div>
+    </div>
+
+    <div class="user-info">
+        <div class="user-avatar" id="userAvatar" th:text="${#strings.substring(session.username,0,1)}">A</div>
+        <div class="user-name" id="userName" th:text="${session.username}">Admin User</div>
+        <div class="user-role" id="userRole" th:text="${session.role == 'ADMIN' ? 'Quản trị viên' 
+              : (session.role == 'MUSICIAN' ? 'Người đăng' : 'Người dùng')}">
+            Quản trị viên
+        </div>
+
+        <form th:action="@{/logout}" method="post">
+            <button class="btn btn-secondary" style="margin-top: 1rem; width: 100%;">
+                <i class="fas fa-sign-out-alt"></i> Đăng xuất
+            </button>
+        </form>
+    </div>
+
+</nav>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const currentPath = window.location.pathname;
+        const menuLinks = document.querySelectorAll(".sidebar-nav .nav-item");
+
+        menuLinks.forEach(link => {
+            if (currentPath.startsWith(link.getAttribute("href"))) {
+                link.classList.add("active");
+            }
+        });
+    });
+</script>

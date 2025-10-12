@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý thể loại - Hệ thống quản lý nhạc</title>
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --background: #ffffff;
+            --foreground: #1f2937;
+            --card: #f1f5f9;
+            --card-foreground: #1f2937;
+            --primary: #1f2937;
+            --primary-foreground: #ffffff;
+            --secondary: #6b7280;
+            --secondary-foreground: #ffffff;
+            --muted: #f1f5f9;
+            --muted-foreground: #6b7280;
+            --accent: #8b5cf6;
+            --accent-foreground: #ffffff;
+            --destructive: #be123c;
+            --destructive-foreground: #ffffff;
+            --border: #e5e7eb;
+            --input: #ffffff;
+            --ring: rgba(139, 92, 246, 0.5);
+            --radius: 0.5rem;
+            --sidebar: #f1f5f9;
+            --sidebar-foreground: #1f2937;
+            --sidebar-primary: #1f2937;
+            --sidebar-primary-foreground: #ffffff;
+            --sidebar-accent: #8b5cf6;
+            --sidebar-accent-foreground: #ffffff;
+            --sidebar-border: #e5e7eb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: var(--background);
+            color: var(--foreground);
+            line-height: 1.6;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar styles - same as artists.html */
+        .sidebar {
+            width: 280px;
+            background: var(--sidebar);
+            border-right: 1px solid var(--sidebar-border);
+            padding: 1.5rem 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 0 1.5rem 2rem;
+            border-bottom: 1px solid var(--sidebar-border);
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar-header h1 {
+            font-family: 'Work Sans', sans-serif;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--sidebar-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-nav {
+            padding: 0 1rem;
+        }
+
+        .nav-group {
+            margin-bottom: 2rem;
+        }
+
+        .nav-group-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--muted-foreground);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.75rem;
+            padding: 0 0.5rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 0.5rem;
+            margin-bottom: 0.25rem;
+            border-radius: var(--radius);
+            color: var(--sidebar-foreground);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: var(--background);
+            color: var(--sidebar-accent);
+        }
+
+        .nav-item.active {
+            background: var(--sidebar-accent);
+            color: var(--sidebar-accent-foreground);
+        }
+
+        .nav-item i {
+            width: 20px;
+            margin-right: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .user-info {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--sidebar-border);
+            margin-top: auto;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--sidebar-accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--sidebar-accent-foreground);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .user-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-role {
+            font-size: 0.8rem;
+            color: var(--muted-foreground);
+        }
+
+        /* Main content styles */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+        }
+
+        .main-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .main-header h1 {
+            font-family: 'Work Sans', sans-serif;
+            font-weight: 700;
+            font-size: 2rem;
+            color: var(--primary);
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: var(--accent-foreground);
+        }
+
+        .btn-primary:hover {
+            background: #7c3aed;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: var(--secondary-foreground);
+        }
+
+        .btn-danger {
+            background: var(--destructive);
+            color: var(--destructive-foreground);
+        }
+
+        .btn-sm {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.8rem;
+        }
+
+        /* Categories grid */
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .category-card {
+            background: var(--card);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .category-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .category-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius);
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-foreground);
+            font-size: 1.5rem;
+        }
+
+        .category-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .category-title {
+            font-family: 'Work Sans', sans-serif;
+            font-weight: 600;
+            font-size: 1.25rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .category-description {
+            color: var(--muted-foreground);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .category-stats {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .category-count {
+            font-size: 0.9rem;
+            color: var(--muted-foreground);
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--background);
+            padding: 2rem;
+            border-radius: var(--radius);
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-family: 'Work Sans', sans-serif;
+            font-weight: 600;
+            font-size: 1.25rem;
+            color: var(--primary);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--muted-foreground);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--foreground);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--input);
+            color: var(--foreground);
+            font-size: 1rem;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: end;
+        }
+
+        /* Mobile responsive */
+        .mobile-menu-btn {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1000;
+            background: var(--accent);
+            color: var(--accent-foreground);
+            border: none;
+            padding: 0.75rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 999;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+                padding-top: 4rem;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .categories-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Mobile Menu Button -->
+        <button class="mobile-menu-btn" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div th:replace="~{/layout/slidesbarMusican}"></div>
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="main-header">
+                <h1>Quản lý thể loại</h1>
+                <button class="btn btn-primary" onclick="openAddModal()">
+                    <i class="fas fa-plus"></i>
+                    Thêm thể loại
+                </button>
+            </div>
+
+            <!-- Categories Grid -->
+            <div class="categories-grid" id="categoriesGrid">
+                <!-- Categories will be loaded here -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Add/Edit Category Modal -->
+    <div class="modal" id="categoryModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Thêm thể loại mới</h3>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <form class="modal-form" onsubmit="saveCategory(event)">
+                <div class="form-group">
+                    <label for="categoryName">Tên thể loại *</label>
+                    <input type="text" id="categoryName" required>
+                </div>
+                <div class="form-group">
+                    <label for="categoryDescription">Mô tả</label>
+                    <textarea id="categoryDescription" placeholder="Nhập mô tả thể loại..."></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Hủy</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        Lưu
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let categories = [];
+        let editingCategoryId = null;
+
+        // Sample data
+        const sampleCategories = [
+            {
+                id: 1,
+                name: "Pop",
+                description: "Nhạc pop hiện đại với giai điệu bắt tai và dễ nghe"
+            },
+            {
+                id: 2,
+                name: "Rock",
+                description: "Nhạc rock mạnh mẽ với guitar và drums nổi bật"
+            },
+            {
+                id: 3,
+                name: "Jazz",
+                description: "Nhạc jazz với sự ứng tấu và tự do trong biểu diễn"
+            },
+            {
+                id: 4,
+                name: "Classical",
+                description: "Nhạc cổ điển với dàn nhạc giao hưởng"
+            },
+            {
+                id: 5,
+                name: "Hip Hop",
+                description: "Nhạc hip hop với rap và beat mạnh mẽ"
+            }
+        ];
+
+        // Initialize
+        function init() {
+            checkAuth();
+            loadUserInfo();
+            
+            const savedCategories = localStorage.getItem('categories');
+            if (savedCategories) {
+                categories = JSON.parse(savedCategories);
+            } else {
+                categories = sampleCategories;
+                saveCategoriesToStorage();
+            }
+            
+            renderCategories();
+        }
+
+        // Authentication functions
+        // function checkAuth() {
+        //     const currentUser = localStorage.getItem('currentUser');
+        //     if (!currentUser) {
+        //         window.location.href = 'login.html';
+        //         return;
+        //     }
+        // }
+
+        // function loadUserInfo() {
+        //     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            
+        //     if (currentUser.username) {
+        //         document.getElementById('userName').textContent = currentUser.displayName || currentUser.username;
+        //         document.getElementById('userRole').textContent = getRoleText(currentUser.role);
+        //         document.getElementById('userAvatar').textContent = (currentUser.displayName || currentUser.username).charAt(0).toUpperCase();
+        //     }
+        // }
+
+        // function getRoleText(role) {
+        //     switch(role) {
+        //         case 'ADMIN': return 'Quản trị viên';
+        //         case 'MUSICIAN': return 'Nhạc sĩ';
+        //         case 'USER': return 'Người dùng';
+        //         default: return 'Người dùng';
+        //     }
+        // }
+
+        // function logout() {
+        //     if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
+        //         localStorage.removeItem('currentUser');
+        //         window.location.href = 'login.html';
+        //     }
+        // }
+
+        // Sidebar functions
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+
+        // Categories management
+        function renderCategories() {
+            const grid = document.getElementById('categoriesGrid');
+            
+            grid.innerHTML = categories.map(category => `
+                <div class="category-card">
+                    <div class="category-header">
+                        <div class="category-icon">
+                            <i class="fas fa-music"></i>
+                        </div>
+                        <div class="category-actions">
+                            <button class="btn btn-sm btn-secondary" onclick="editCategory(${category.id})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteCategory(${category.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <h3 class="category-title">${category.name}</h3>
+                    <p class="category-description">${category.description || 'Chưa có mô tả'}</p>
+                    <div class="category-stats">
+                        <span class="category-count">${getArtistCount(category.name)} nghệ sĩ</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getArtistCount(categoryName) {
+            // Simulate getting artist count for this category
+            const artists = JSON.parse(localStorage.getItem('artists') || '[]');
+            return artists.filter(artist => artist.category === categoryName.toLowerCase()).length;
+        }
+
+        // Modal functions
+        function openAddModal() {
+            editingCategoryId = null;
+            document.getElementById('modalTitle').textContent = 'Thêm thể loại mới';
+            document.getElementById('categoryName').value = '';
+            document.getElementById('categoryDescription').value = '';
+            document.getElementById('categoryModal').classList.add('show');
+        }
+
+        function editCategory(id) {
+            const category = categories.find(c => c.id === id);
+            if (!category) return;
+            
+            editingCategoryId = id;
+            document.getElementById('modalTitle').textContent = 'Sửa thông tin thể loại';
+            document.getElementById('categoryName').value = category.name;
+            document.getElementById('categoryDescription').value = category.description || '';
+            document.getElementById('categoryModal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('categoryModal').classList.remove('show');
+            editingCategoryId = null;
+        }
+
+        function saveCategory(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('categoryName').value.trim();
+            const description = document.getElementById('categoryDescription').value.trim();
+            
+            if (!name) {
+                alert('Vui lòng nhập tên thể loại!');
+                return;
+            }
+            
+            if (editingCategoryId) {
+                // Update existing category
+                const categoryIndex = categories.findIndex(c => c.id === editingCategoryId);
+                if (categoryIndex !== -1) {
+                    categories[categoryIndex] = {
+                        ...categories[categoryIndex],
+                        name,
+                        description
+                    };
+                }
+            } else {
+                // Add new category
+                const newCategory = {
+                    id: Date.now(),
+                    name,
+                    description
+                };
+                categories.push(newCategory);
+            }
+            
+            saveCategoriesToStorage();
+            renderCategories();
+            closeModal();
+            
+            alert(editingCategoryId ? 'Cập nhật thể loại thành công!' : 'Thêm thể loại thành công!');
+        }
+
+        function deleteCategory(id) {
+            const category = categories.find(c => c.id === id);
+            if (!category) return;
+            
+            if (confirm(`Bạn có chắc chắn muốn xóa thể loại "${category.name}"?`)) {
+                categories = categories.filter(c => c.id !== id);
+                saveCategoriesToStorage();
+                renderCategories();
+                alert('Xóa thể loại thành công!');
+            }
+        }
+
+        function saveCategoriesToStorage() {
+            localStorage.setItem('categories', JSON.stringify(categories));
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('categoryModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Initialize when page loads
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

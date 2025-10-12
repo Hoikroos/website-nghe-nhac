@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý playlist - Hệ thống quản lý nhạc</title>
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --background: #ffffff;
+            --foreground: #1f2937;
+            --card: #f1f5f9;
+            --card-foreground: #1f2937;
+            --primary: #1f2937;
+            --primary-foreground: #ffffff;
+            --secondary: #6b7280;
+            --secondary-foreground: #ffffff;
+            --muted: #f1f5f9;
+            --muted-foreground: #6b7280;
+            --accent: #8b5cf6;
+            --accent-foreground: #ffffff;
+            --destructive: #be123c;
+            --destructive-foreground: #ffffff;
+            --border: #e5e7eb;
+            --input: #ffffff;
+            --ring: rgba(139, 92, 246, 0.5);
+            --radius: 0.5rem;
+            --sidebar: #f1f5f9;
+            --sidebar-foreground: #1f2937;
+            --sidebar-primary: #1f2937;
+            --sidebar-primary-foreground: #ffffff;
+            --sidebar-accent: #8b5cf6;
+            --sidebar-accent-foreground: #ffffff;
+            --sidebar-border: #e5e7eb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: var(--background);
+            color: var(--foreground);
+            line-height: 1.6;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar styles */
+        .sidebar {
+            width: 280px;
+            background: var(--sidebar);
+            border-right: 1px solid var(--sidebar-border);
+            padding: 1.5rem 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 0 1.5rem 2rem;
+            border-bottom: 1px solid var(--sidebar-border);
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar-header h1 {
+            font-family: 'Work Sans', sans-serif;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--sidebar-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-nav {
+            padding: 0 1rem;
+        }
+
+        .nav-group {
+            margin-bottom: 2rem;
+        }
+
+        .nav-group-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--muted-foreground);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.75rem;
+            padding: 0 0.5rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 0.5rem;
+            margin-bottom: 0.25rem;
+            border-radius: var(--radius);
+            color: var(--sidebar-foreground);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: var(--background);
+            color: var(--sidebar-accent);
+        }
+
+        .nav-item.active {
+            background: var(--sidebar-accent);
+            color: var(--sidebar-accent-foreground);
+        }
+
+        .nav-item i {
+            width: 20px;
+            margin-right: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .user-info {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--sidebar-border);
+            margin-top: auto;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--sidebar-accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--sidebar-accent-foreground);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .user-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-role {
+            font-size: 0.8rem;
+            color: var(--muted-foreground);
+        }
+
+        /* Main content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+        }
+
+        .main-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .main-header h1 {
+            font-family: 'Work Sans', sans-serif;
+            font-weight: 700;
+            font-size: 2rem;
+            color: var(--primary);
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: var(--accent-foreground);
+        }
+
+        .btn-primary:hover {
+            background: #7c3aed;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: var(--secondary-foreground);
+        }
+
+        .btn-danger {
+            background: var(--destructive);
+            color: var(--destructive-foreground);
+        }
+
+        .btn-sm {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.8rem;
+        }
+
+        /* Playlists grid */
+        .playlists-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .playlist-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .playlist-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .playlist-header {
+            background: linear-gradient(135deg, var(--accent), #ec4899);
+            padding: 2rem 1.5rem;
+            color: white;
+            text-align: center;
+        }
+
+        .playlist-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .playlist-title {
+            font-family: 'Work Sans', sans-serif;
+            font-weight: 600;
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .playlist-description {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .playlist-info {
+            padding: 1.5rem;
+        }
+
+        .playlist-meta {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: var(--muted-foreground);
+        }
+
+        .privacy-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .privacy-badge.public {
+            background: #10b981;
+            color: white;
+        }
+
+        .privacy-badge.private {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .playlist-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* Search section */
+        .search-section {
+            background: var(--card);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            margin-bottom: 2rem;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 1rem;
+            align-items: end;
+        }
+
+        .form-group {
+            flex: 1;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--foreground);
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--input);
+            color: var(--foreground);
+            font-size: 1rem;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--background);
+            padding: 2rem;
+            border-radius: var(--radius);
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-family: 'Work Sans', sans-serif;
+            font-weight: 600;
+            font-size: 1.25rem;
+            color: var(--primary);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--muted-foreground);
+        }
+
+        .modal-form .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-form textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--input);
+            color: var(--foreground);
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: end;
+        }
+
+        /* Tracks modal */
+        .tracks-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+        }
+
+        .track-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .track-item:hover {
+            background: var(--muted);
+        }
+
+        .track-item:last-child {
+            border-bottom: none;
+        }
+
+        .track-item input[type="checkbox"] {
+            margin-right: 1rem;
+        }
+
+        .track-info {
+            flex: 1;
+        }
+
+        .track-title {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .track-album {
+            font-size: 0.9rem;
+            color: var(--muted-foreground);
+        }
+
+        /* Mobile responsive */
+        .mobile-menu-btn {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1000;
+            background: var(--accent);
+            color: var(--accent-foreground);
+            border: none;
+            padding: 0.75rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 999;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+                padding-top: 4rem;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .playlists-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-form {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Mobile Menu Button -->
+        <button class="mobile-menu-btn" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div th:replace="~{/layout/slidesbarMusican}"></div>
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="main-header">
+                <h1>Quản lý playlist</h1>
+                <div class="header-actions">
+                    <button class="btn btn-secondary" onclick="exportData()">
+                        <i class="fas fa-download"></i>
+                        Xuất dữ liệu
+                    </button>
+                    <button class="btn btn-primary" onclick="openAddModal()">
+                        <i class="fas fa-plus"></i>
+                        Tạo playlist
+                    </button>
+                </div>
+            </div>
+
+            <!-- Search Section -->
+            <div class="search-section">
+                <form class="search-form" onsubmit="searchPlaylists(event)">
+                    <div class="form-group">
+                        <label for="searchTitle">Tên playlist</label>
+                        <input type="text" id="searchTitle" placeholder="Nhập tên playlist...">
+                    </div>
+                    <div class="form-group">
+                        <label for="searchPrivacy">Quyền riêng tư</label>
+                        <select id="searchPrivacy">
+                            <option value="">Tất cả</option>
+                            <option value="1">Công khai</option>
+                            <option value="0">Riêng tư</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i>
+                            Tìm kiếm
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Playlists Grid -->
+            <div class="playlists-grid" id="playlistsGrid">
+                <!-- Playlists will be loaded here -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Add/Edit Playlist Modal -->
+    <div class="modal" id="playlistModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Tạo playlist mới</h3>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <form class="modal-form" onsubmit="savePlaylist(event)">
+                <div class="form-group">
+                    <label for="playlistTitle">Tên playlist *</label>
+                    <input type="text" id="playlistTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="playlistDescription">Mô tả</label>
+                    <textarea id="playlistDescription" placeholder="Nhập mô tả playlist..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="playlistPrivacy">Quyền riêng tư</label>
+                    <select id="playlistPrivacy">
+                        <option value="1">Công khai</option>
+                        <option value="0">Riêng tư</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Hủy</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        Lưu
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Manage Tracks Modal -->
+    <div class="modal" id="tracksModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Quản lý bài hát</h3>
+                <button class="close-btn" onclick="closeTracksModal()">&times;</button>
+            </div>
+            <div class="tracks-list" id="tracksList">
+                <!-- Tracks will be loaded here -->
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeTracksModal()">Đóng</button>
+                <button type="button" class="btn btn-primary" onclick="savePlaylistTracks()">
+                    <i class="fas fa-save"></i>
+                    Lưu thay đổi
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let playlists = [];
+        let tracks = [];
+        let albums = [];
+        let playlistTracks = [];
+        let editingPlaylistId = null;
+        let managingPlaylistId = null;
+        let currentUser = null;
+
+        // Sample data
+        const samplePlaylists = [
+            {
+                id: 1,
+                accountId: 1,
+                title: "Nhạc yêu thích",
+                description: "Những bài hát tôi yêu thích nhất",
+                isPublic: true,
+                createdAt: "2024-01-15"
+            },
+            {
+                id: 2,
+                accountId: 1,
+                title: "Nhạc thư giãn",
+                description: "Playlist cho những lúc muốn thư giãn",
+                isPublic: false,
+                createdAt: "2024-01-20"
+            }
+        ];
+
+        const samplePlaylistTracks = [
+            { playlistId: 1, trackId: 1, position: 1, addedAt: "2024-01-15" },
+            { playlistId: 1, trackId: 2, position: 2, addedAt: "2024-01-16" },
+            { playlistId: 2, trackId: 2, position: 1, addedAt: "2024-01-20" }
+        ];
+
+        // Initialize
+        function init() {
+            checkAuth();
+            loadUserInfo();
+            loadData();
+            renderPlaylists();
+        }
+
+        // Authentication functions
+        // function checkAuth() {
+        //     const userData = localStorage.getItem('currentUser');
+        //     if (!userData) {
+        //         window.location.href = 'login.html';
+        //         return;
+        //     }
+        //     currentUser = JSON.parse(userData);
+        // }
+
+        // function loadUserInfo() {
+        //     if (currentUser.username) {
+        //         document.getElementById('userName').textContent = currentUser.displayName || currentUser.username;
+        //         document.getElementById('userRole').textContent = getRoleText(currentUser.role);
+        //         document.getElementById('userAvatar').textContent = (currentUser.displayName || currentUser.username).charAt(0).toUpperCase();
+        //     }
+        // }
+
+        // function getRoleText(role) {
+        //     switch(role) {
+        //         case 'ADMIN': return 'Quản trị viên';
+        //         case 'MUSICIAN': return 'Nhạc sĩ';
+        //         case 'USER': return 'Người dùng';
+        //         default: return 'Người dùng';
+        //     }
+        // }
+
+        // function logout() {
+        //     if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
+        //         localStorage.removeItem('currentUser');
+        //         window.location.href = 'login.html';
+        //     }
+        // }
+
+        // Load data
+        function loadData() {
+            // Load playlists
+            const savedPlaylists = localStorage.getItem('playlists');
+            if (savedPlaylists) {
+                playlists = JSON.parse(savedPlaylists);
+            } else {
+                playlists = samplePlaylists;
+                savePlaylistsToStorage();
+            }
+
+            // Load playlist tracks
+            const savedPlaylistTracks = localStorage.getItem('playlistTracks');
+            if (savedPlaylistTracks) {
+                playlistTracks = JSON.parse(savedPlaylistTracks);
+            } else {
+                playlistTracks = samplePlaylistTracks;
+                savePlaylistTracksToStorage();
+            }
+
+            // Load tracks and albums
+            tracks = JSON.parse(localStorage.getItem('tracks') || '[]');
+            albums = JSON.parse(localStorage.getItem('albums') || '[]');
+        }
+
+        // Sidebar functions
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+
+        // Playlists management
+        function renderPlaylists(filteredPlaylists = null) {
+            const playlistsToRender = filteredPlaylists || playlists;
+            const grid = document.getElementById('playlistsGrid');
+            
+            grid.innerHTML = playlistsToRender.map(playlist => {
+                const trackCount = getPlaylistTrackCount(playlist.id);
+                
+                return `
+                    <div class="playlist-card">
+                        <div class="playlist-header">
+                            <div class="playlist-icon">
+                                <i class="fas fa-list"></i>
+                            </div>
+                            <h3 class="playlist-title">${playlist.title}</h3>
+                            <p class="playlist-description">${playlist.description || 'Không có mô tả'}</p>
+                        </div>
+                        <div class="playlist-info">
+                            <div class="playlist-meta">
+                                <span>${trackCount} bài hát</span>
+                                <span class="privacy-badge ${playlist.isPublic ? 'public' : 'private'}">
+                                    ${playlist.isPublic ? 'Công khai' : 'Riêng tư'}
+                                </span>
+                            </div>
+                            <div class="playlist-meta">
+                                <span>Tạo: ${formatDate(playlist.createdAt)}</span>
+                            </div>
+                            <div class="playlist-actions">
+                                <button class="btn btn-sm btn-secondary" onclick="manageTracks(${playlist.id})">
+                                    <i class="fas fa-music"></i>
+                                    Bài hát
+                                </button>
+                                <button class="btn btn-sm btn-secondary" onclick="editPlaylist(${playlist.id})">
+                                    <i class="fas fa-edit"></i>
+                                    Sửa
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deletePlaylist(${playlist.id})">
+                                    <i class="fas fa-trash"></i>
+                                    Xóa
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getPlaylistTrackCount(playlistId) {
+            return playlistTracks.filter(pt => pt.playlistId === playlistId).length;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('vi-VN');
+        }
+
+        function searchPlaylists(event) {
+            event.preventDefault();
+            
+            const searchTitle = document.getElementById('searchTitle').value.toLowerCase();
+            const searchPrivacy = document.getElementById('searchPrivacy').value;
+            
+            const filtered = playlists.filter(playlist => {
+                const titleMatch = !searchTitle || playlist.title.toLowerCase().includes(searchTitle);
+                const privacyMatch = searchPrivacy === '' || playlist.isPublic.toString() === searchPrivacy;
+                return titleMatch && privacyMatch;
+            });
+            
+            renderPlaylists(filtered);
+        }
+
+        // Modal functions
+        function openAddModal() {
+            editingPlaylistId = null;
+            document.getElementById('modalTitle').textContent = 'Tạo playlist mới';
+            document.getElementById('playlistTitle').value = '';
+            document.getElementById('playlistDescription').value = '';
+            document.getElementById('playlistPrivacy').value = '1';
+            document.getElementById('playlistModal').classList.add('show');
+        }
+
+        function editPlaylist(id) {
+            const playlist = playlists.find(p => p.id === id);
+            if (!playlist) return;
+            
+            editingPlaylistId = id;
+            document.getElementById('modalTitle').textContent = 'Sửa thông tin playlist';
+            document.getElementById('playlistTitle').value = playlist.title;
+            document.getElementById('playlistDescription').value = playlist.description || '';
+            document.getElementById('playlistPrivacy').value = playlist.isPublic ? '1' : '0';
+            document.getElementById('playlistModal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('playlistModal').classList.remove('show');
+            editingPlaylistId = null;
+        }
+
+        function savePlaylist(event) {
+            event.preventDefault();
+            
+            const title = document.getElementById('playlistTitle').value.trim();
+            const description = document.getElementById('playlistDescription').value.trim();
+            const isPublic = document.getElementById('playlistPrivacy').value === '1';
+            
+            if (!title) {
+                alert('Vui lòng nhập tên playlist!');
+                return;
+            }
+            
+            if (editingPlaylistId) {
+                // Update existing playlist
+                const playlistIndex = playlists.findIndex(p => p.id === editingPlaylistId);
+                if (playlistIndex !== -1) {
+                    playlists[playlistIndex] = {
+                        ...playlists[playlistIndex],
+                        title,
+                        description,
+                        isPublic
+                    };
+                }
+            } else {
+                // Add new playlist
+                const newPlaylist = {
+                    id: Date.now(),
+                    accountId: currentUser.id || 1,
+                    title,
+                    description,
+                    isPublic,
+                    createdAt: new Date().toISOString().split('T')[0]
+                };
+                playlists.push(newPlaylist);
+            }
+            
+            savePlaylistsToStorage();
+            renderPlaylists();
+            closeModal();
+            
+            alert(editingPlaylistId ? 'Cập nhật playlist thành công!' : 'Tạo playlist thành công!');
+        }
+
+        function deletePlaylist(id) {
+            const playlist = playlists.find(p => p.id === id);
+            if (!playlist) return;
+            
+            if (confirm(`Bạn có chắc chắn muốn xóa playlist "${playlist.title}"?`)) {
+                playlists = playlists.filter(p => p.id !== id);
+                // Also remove playlist tracks
+                playlistTracks = playlistTracks.filter(pt => pt.playlistId !== id);
+                savePlaylistsToStorage();
+                savePlaylistTracksToStorage();
+                renderPlaylists();
+                alert('Xóa playlist thành công!');
+            }
+        }
+
+        // Tracks management
+        function manageTracks(playlistId) {
+            managingPlaylistId = playlistId;
+            const playlist = playlists.find(p => p.id === playlistId);
+            if (!playlist) return;
+
+            document.querySelector('#tracksModal .modal-title').textContent = `Quản lý bài hát - ${playlist.title}`;
+            renderTracksList();
+            document.getElementById('tracksModal').classList.add('show');
+        }
+
+        function renderTracksList() {
+            const tracksList = document.getElementById('tracksList');
+            const currentPlaylistTracks = playlistTracks.filter(pt => pt.playlistId === managingPlaylistId);
+            
+            tracksList.innerHTML = tracks.map(track => {
+                const album = albums.find(a => a.id == track.albumId);
+                const albumTitle = album ? album.title : 'Không có album';
+                const isInPlaylist = currentPlaylistTracks.some(pt => pt.trackId === track.id);
+                
+                return `
+                    <div class="track-item">
+                        <input type="checkbox" ${isInPlaylist ? 'checked' : ''} 
+                               onchange="toggleTrackInPlaylist(${track.id}, this.checked)">
+                        <div class="track-info">
+                            <div class="track-title">${track.title}</div>
+                            <div class="track-album">${albumTitle}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleTrackInPlaylist(trackId, isChecked) {
+            const existingIndex = playlistTracks.findIndex(pt => 
+                pt.playlistId === managingPlaylistId && pt.trackId === trackId
+            );
+
+            if (isChecked && existingIndex === -1) {
+                // Add track to playlist
+                const maxPosition = Math.max(
+                    ...playlistTracks
+                        .filter(pt => pt.playlistId === managingPlaylistId)
+                        .map(pt => pt.position),
+                    0
+                );
+                
+                playlistTracks.push({
+                    playlistId: managingPlaylistId,
+                    trackId: trackId,
+                    position: maxPosition + 1,
+                    addedAt: new Date().toISOString().split('T')[0]
+                });
+            } else if (!isChecked && existingIndex !== -1) {
+                // Remove track from playlist
+                playlistTracks.splice(existingIndex, 1);
+            }
+        }
+
+        function savePlaylistTracks() {
+            savePlaylistTracksToStorage();
+            renderPlaylists();
+            alert('Cập nhật danh sách bài hát thành công!');
+        }
+
+        function closeTracksModal() {
+            document.getElementById('tracksModal').classList.remove('show');
+            managingPlaylistId = null;
+        }
+
+        // Storage functions
+        function savePlaylistsToStorage() {
+            localStorage.setItem('playlists', JSON.stringify(playlists));
+        }
+
+        function savePlaylistTracksToStorage() {
+            localStorage.setItem('playlistTracks', JSON.stringify(playlistTracks));
+        }
+
+        function exportData() {
+            const data = {
+                playlists: playlists,
+                playlistTracks: playlistTracks
+            };
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'playlists_data.json';
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Close modals when clicking outside
+        document.getElementById('playlistModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        document.getElementById('tracksModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeTracksModal();
+            }
+        });
+
+        // Initialize when page loads
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký - Hệ thống quản lý nhạc</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600;700&family=Open+Sans:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        :root {
+            --background: #ffffff;
+            --foreground: #1f2937;
+            --card: #f1f5f9;
+            --card-foreground: #1f2937;
+            --primary: #1f2937;
+            --primary-foreground: #ffffff;
+            --secondary: #6b7280;
+            --secondary-foreground: #ffffff;
+            --muted: #f1f5f9;
+            --muted-foreground: #6b7280;
+            --accent: #8b5cf6;
+            --accent-foreground: #ffffff;
+            --destructive: #be123c;
+            --destructive-foreground: #ffffff;
+            --border: #e5e7eb;
+            --input: #ffffff;
+            --ring: rgba(139, 92, 246, 0.5);
+            --radius: 0.5rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, var(--muted) 0%, var(--background) 100%);
+            color: var(--foreground);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            background: var(--background);
+            padding: 2rem;
+            border-radius: var(--radius);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid var(--border);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo h1 {
+            font-family: 'Work Sans', sans-serif;
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .logo p {
+            color: var(--muted-foreground);
+            font-size: 0.9rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--foreground);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem 2.5rem 0.75rem 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--input);
+            color: var(--foreground);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--ring);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.75rem;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            position: relative;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: var(--accent-foreground);
+        }
+
+        .btn-primary:hover:not(.loading) {
+            background: #7c3aed;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: var(--secondary-foreground);
+            margin-top: 1rem;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        .btn-close {
+            background: var(--destructive);
+            color: var(--destructive-foreground);
+            margin-top: 1rem;
+        }
+
+        .btn-close:hover {
+            background: #a31134;
+        }
+
+        .alert {
+            padding: 0.75rem;
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .alert-error {
+            background: #fef2f2;
+            color: var(--destructive);
+            border: 1px solid #fecaca;
+        }
+
+        .alert-success {
+            background: #f0fdf4;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .form-toggle {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .form-toggle a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .form-toggle a:hover {
+            text-decoration: underline;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: var(--background);
+            padding: 2rem;
+            border-radius: var(--radius);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid var(--border);
+        }
+
+        .modal-content h2 {
+            font-family: 'Work Sans', sans-serif;
+            font-weight: 600;
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .modal-content .form-group {
+            margin-bottom: 1rem;
+        }
+
+        /* Loading styles */
+        .btn.loading {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .btn.loading::after {
+            content: '';
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--accent-foreground);
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Password toggle styles */
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 65%;
+            transform: translateY(-20%);
+            cursor: pointer;
+            color: var(--muted-foreground);
+            font-size: 1rem;
+        }
+
+        .password-toggle:hover {
+            color: var(--accent);
+        }
+
+        @media (max-width: 480px) {
+
+            .login-container,
+            .modal-content {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <h1>🎵 MusicManager</h1>
+            <p>Tạo tài khoản mới</p>
+        </div>
+
+        <div class="alert alert-error" id="errorAlert"></div>
+        <div class="alert alert-success" id="successAlert"></div>
+
+        <form id="registerForm">
+            <div class="form-group">
+                <label for="registerUsername">Tên đăng nhập</label>
+                <input type="text" id="registerUsername" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="registerEmail">Email</label>
+                <input type="email" id="registerEmail" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="registerPassword">Mật khẩu</label>
+                <input type="password" id="registerPassword" name="password" required>
+                <i class="fas fa-eye password-toggle" id="togglePassword"></i>
+            </div>
+            <div class="form-group">
+                <label for="registerConfirmPassword">Xác nhận mật khẩu</label>
+                <input type="password" id="registerConfirmPassword" name="confirmPassword" required>
+                <i class="fas fa-eye password-toggle" id="toggleConfirmPassword"></i>
+            </div>
+            <div class="form-group">
+                <label for="registerFullname">Họ và tên</label>
+                <input type="text" id="registerFullname" name="fullName">
+            </div>
+            <button type="submit" class="btn btn-primary" id="registerButton">Đăng ký</button>
+        </form>
+
+        <div class="form-toggle">
+            <p>Đã có tài khoản? <a href="/Dangnhap">Đăng nhập ngay</a></p>
+        </div>
+    </div>
+
+    <!-- OTP Modal -->
+    <div class="modal" id="otpModal">
+        <div class="modal-content">
+            <h2>Xác thực email</h2>
+            <p>Vui lòng nhập mã OTP được gửi đến email của bạn.</p>
+            <div class="alert alert-error" id="otpErrorAlert"></div>
+            <div class="alert alert-success" id="otpSuccessAlert"></div>
+            <form id="otpForm">
+                <div class="form-group">
+                    <label for="otpInput">Mã OTP</label>
+                    <input type="text" id="otpInput" name="otp" required maxlength="6">
+                </div>
+                <button type="submit" class="btn btn-primary" id="otpSubmitButton">Xác thực</button>
+                <button type="button" class="btn btn-close" onclick="closeModal()">Đóng</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function showAlert(message, type, isOtpAlert = false) {
+            const errorAlert = document.getElementById(isOtpAlert ? 'otpErrorAlert' : 'errorAlert');
+            const successAlert = document.getElementById(isOtpAlert ? 'otpSuccessAlert' : 'successAlert');
+            hideAlerts(isOtpAlert);
+            if (type === 'error') {
+                errorAlert.textContent = message;
+                errorAlert.style.display = 'block';
+            } else {
+                successAlert.textContent = message;
+                successAlert.style.display = 'block';
+            }
+        }
+
+        function hideAlerts(isOtpAlert = false) {
+            document.getElementById(isOtpAlert ? 'otpErrorAlert' : 'errorAlert').style.display = 'none';
+            document.getElementById(isOtpAlert ? 'otpSuccessAlert' : 'successAlert').style.display = 'none';
+        }
+
+        function showModal() {
+            document.getElementById('otpModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('otpModal').style.display = 'none';
+            hideAlerts(true);
+            document.getElementById('otpInput').value = '';
+        }
+
+        function setLoading(button, isLoading) {
+            if (isLoading) {
+                button.classList.add('loading');
+                button.disabled = true;
+                button.textContent = 'Đang xử lý...';
+            } else {
+                button.classList.remove('loading');
+                button.disabled = false;
+                button.textContent = button.id === 'registerButton' ? 'Đăng ký' : 'Xác thực';
+            }
+        }
+
+        // Toggle password visibility
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const passwordInput = document.getElementById('registerPassword');
+            const icon = this;
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+
+        document.getElementById('toggleConfirmPassword').addEventListener('click', function () {
+            const confirmPasswordInput = document.getElementById('registerConfirmPassword');
+            const icon = this;
+            if (confirmPasswordInput.type === 'password') {
+                confirmPasswordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                confirmPasswordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const registerButton = document.getElementById('registerButton');
+            setLoading(registerButton, true);
+
+            const username = document.getElementById('registerUsername').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('registerConfirmPassword').value;
+            const fullName = document.getElementById('registerFullname').value;
+
+            // Check if passwords match
+            if (password !== confirmPassword) {
+                setLoading(registerButton, false);
+                showAlert('Mật khẩu và xác nhận mật khẩu không khớp!', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username,
+                        email,
+                        password,
+                        fullName
+                    })
+                });
+
+                setLoading(registerButton, false);
+
+                if (response.ok) {
+                    showAlert('Đăng ký thành công! Vui lòng kiểm tra email để nhận mã OTP.', 'success');
+                    showModal();
+                } else {
+                    const result = await response.text();
+                    showAlert(result || 'Đăng ký thất bại!', 'error');
+                }
+            } catch (error) {
+                setLoading(registerButton, false);
+                showAlert('Lỗi hệ thống: ' + error.message, 'error');
+                console.error('Registration error:', error);
+            }
+        });
+
+        document.getElementById('otpForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const otpSubmitButton = document.getElementById('otpSubmitButton');
+            setLoading(otpSubmitButton, true);
+
+            const email = document.getElementById('registerEmail').value;
+            const otp = document.getElementById('otpInput').value;
+
+            try {
+                const response = await fetch('/api/auth/verify-otp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `email=${encodeURIComponent(email)}&otp=${encodeURIComponent(otp)}`
+                });
+
+                setLoading(otpSubmitButton, false);
+
+                if (response.ok) {
+                    showAlert('Xác thực OTP thành công! Đang chuyển hướng...', 'success', true);
+                    setTimeout(() => {
+                        closeModal();
+                        window.location.href = '/Dangnhap';
+                    }, 2000);
+                } else {
+                    const result = await response.text();
+                    showAlert(result || 'Xác thực OTP thất bại!', 'error', true);
+                }
+            } catch (error) {
+                setLoading(otpSubmitButton, false);
+                showAlert('Lỗi hệ thống: ' + error.message, 'error', true);
+                console.error('OTP verification error:', error);
+            }
+        });
+    </script>
+</body>
+
+</html>

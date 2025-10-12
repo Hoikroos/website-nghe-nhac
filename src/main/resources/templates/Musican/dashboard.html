@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Hệ thống quản lý nhạc</title>
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --background: #ffffff;
+            --foreground: #1f2937;
+            --card: #f1f5f9;
+            --card-foreground: #1f2937;
+            --primary: #1f2937;
+            --primary-foreground: #ffffff;
+            --secondary: #6b7280;
+            --secondary-foreground: #ffffff;
+            --muted: #f1f5f9;
+            --muted-foreground: #6b7280;
+            --accent: #8b5cf6;
+            --accent-foreground: #ffffff;
+            --destructive: #be123c;
+            --destructive-foreground: #ffffff;
+            --border: #e5e7eb;
+            --input: #ffffff;
+            --ring: rgba(139, 92, 246, 0.5);
+            --radius: 0.5rem;
+            --sidebar: #f1f5f9;
+            --sidebar-foreground: #1f2937;
+            --sidebar-primary: #1f2937;
+            --sidebar-primary-foreground: #ffffff;
+            --sidebar-accent: #8b5cf6;
+            --sidebar-accent-foreground: #ffffff;
+            --sidebar-border: #e5e7eb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: var(--background);
+            color: var(--foreground);
+            line-height: 1.6;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--sidebar);
+            border-right: 1px solid var(--sidebar-border);
+            padding: 1.5rem 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 0 1.5rem 2rem;
+            border-bottom: 1px solid var(--sidebar-border);
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar-header h1 {
+            font-family: 'Work Sans', sans-serif;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--sidebar-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-header p {
+            color: var(--muted-foreground);
+            font-size: 0.9rem;
+        }
+
+        .sidebar-nav {
+            padding: 0 1rem;
+        }
+
+        .nav-group {
+            margin-bottom: 2rem;
+        }
+
+        .nav-group-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--muted-foreground);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.75rem;
+            padding: 0 0.5rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 0.5rem;
+            margin-bottom: 0.25rem;
+            border-radius: var(--radius);
+            color: var(--sidebar-foreground);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: var(--background);
+            color: var(--sidebar-accent);
+        }
+
+        .nav-item.active {
+            background: var(--sidebar-accent);
+            color: var(--sidebar-accent-foreground);
+        }
+
+        .nav-item i {
+            width: 20px;
+            margin-right: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .user-info {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--sidebar-border);
+            margin-top: auto;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--sidebar-accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--sidebar-accent-foreground);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .user-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-role {
+            font-size: 0.8rem;
+            color: var(--muted-foreground);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+        }
+
+        .main-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .main-header h1 {
+            font-family: 'Work Sans', sans-serif;
+            font-weight: 700;
+            font-size: 2rem;
+            color: var(--primary);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: var(--accent-foreground);
+        }
+
+        .btn-primary:hover {
+            background: #7c3aed;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: var(--secondary-foreground);
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--accent-foreground);
+        }
+
+        .stat-icon.artists {
+            background: #ec4899;
+        }
+
+        .stat-icon.albums {
+            background: #f59e0b;
+        }
+
+        .stat-icon.tracks {
+            background: #10b981;
+        }
+
+        .stat-icon.playlists {
+            background: var(--accent);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: var(--muted-foreground);
+            font-size: 0.9rem;
+        }
+
+        .stat-change {
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .stat-change.positive {
+            color: #10b981;
+        }
+
+        .stat-change.negative {
+            color: var(--destructive);
+        }
+
+        /* Recent Activity */
+        .content-section {
+            background: var(--card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-family: 'Work Sans', sans-serif;
+            font-weight: 600;
+            font-size: 1.25rem;
+            color: var(--primary);
+        }
+
+        .activity-list {
+            list-style: none;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            color: var(--accent);
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .activity-time {
+            font-size: 0.8rem;
+            color: var(--muted-foreground);
+        }
+
+        /* Mobile Responsive */
+        .mobile-menu-btn {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1000;
+            background: var(--accent);
+            color: var(--accent-foreground);
+            border: none;
+            padding: 0.75rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 999;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+                padding-top: 4rem;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .main-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+
+        <button class="mobile-menu-btn" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+        </button>
+        <!-- Sidebar -->
+         <div th:replace="~{/layout/slidesbarMusican}"></div>
+        <main class="main-content">
+            <div class="main-header">
+                <h1>Dashboard</h1>
+                <div class="header-actions">
+                    <button class="btn btn-secondary">
+                        <i class="fas fa-download"></i>
+                        Xuất báo cáo
+                    </button>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-plus"></i>
+                        Thêm mới
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon artists">
+                            <i class="fas fa-microphone"></i>
+                        </div>
+                    </div>
+                    <div class="stat-number" id="artistsCount">156</div>
+                    <div class="stat-label">Nghệ sĩ</div>
+                    <div class="stat-change positive">+12% so với tháng trước</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon albums">
+                            <i class="fas fa-compact-disc"></i>
+                        </div>
+                    </div>
+                    <div class="stat-number" id="albumsCount">89</div>
+                    <div class="stat-label">Album</div>
+                    <div class="stat-change positive">+8% so với tháng trước</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon tracks">
+                            <i class="fas fa-music"></i>
+                        </div>
+                    </div>
+                    <div class="stat-number" id="tracksCount">1,247</div>
+                    <div class="stat-label">Bài hát</div>
+                    <div class="stat-change positive">+15% so với tháng trước</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon playlists">
+                            <i class="fas fa-list"></i>
+                        </div>
+                    </div>
+                    <div class="stat-number" id="playlistsCount">342</div>
+                    <div class="stat-label">Playlist</div>
+                    <div class="stat-change positive">+23% so với tháng trước</div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Hoạt động gần đây</h2>
+                    <a href="#" class="btn btn-secondary">Xem tất cả</a>
+                </div>
+                <ul class="activity-list">
+                    <li class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-plus"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Thêm album mới "Những bài hát hay nhất"</div>
+                            <div class="activity-time">2 giờ trước</div>
+                        </div>
+                    </li>
+                    <li class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-edit"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Cập nhật thông tin nghệ sĩ "Sơn Tùng M-TP"</div>
+                            <div class="activity-time">4 giờ trước</div>
+                        </div>
+                    </li>
+                    <li class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Người dùng thêm 15 bài hát vào yêu thích</div>
+                            <div class="activity-time">6 giờ trước</div>
+                        </div>
+                    </li>
+                    <li class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-upload"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Upload 8 bài hát mới vào hệ thống</div>
+                            <div class="activity-time">1 ngày trước</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="content-section">
+                <div class="section-header">
+                    <h2 class="section-title">Thao tác nhanh</h2>
+                </div>
+                <div class="stats-grid">
+                    <a th:href="@{/musican/artists}" class="stat-card" style="text-decoration: none; color: inherit;">
+                        <div class="stat-header">
+                            <div class="stat-icon artists">
+                                <i class="fas fa-plus"></i>
+                            </div>
+                        </div>
+                        <div class="stat-label">Thêm nghệ sĩ mới</div>
+                    </a>
+                    <a th:href="@{/musican/albums}" class="stat-card" style="text-decoration: none; color: inherit;">
+                        <div class="stat-header">
+                            <div class="stat-icon albums">
+                                <i class="fas fa-plus"></i>
+                            </div>
+                        </div>
+                        <div class="stat-label">Tạo album mới</div>
+                    </a>
+                    <a th:href="@{/musican/tracks}" class="stat-card" style="text-decoration: none; color: inherit;">
+                        <div class="stat-header">
+                            <div class="stat-icon tracks">
+                                <i class="fas fa-upload"></i>
+                            </div>
+                        </div>
+                        <div class="stat-label">Upload bài hát</div>
+                    </a>
+                    <a th:href="@{musican/playlists}" class="stat-card" style="text-decoration: none; color: inherit;">
+                        <div class="stat-header">
+                            <div class="stat-icon playlists">
+                                <i class="fas fa-plus"></i>
+                            </div>
+                        </div>
+                        <div class="stat-label">Tạo playlist</div>
+                    </a>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Toggle sidebar for mobile
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(e) {
+            const sidebar = document.getElementById('sidebar');
+            const menuBtn = document.querySelector('.mobile-menu-btn');
+            
+            if (window.innerWidth <= 768 && 
+                !sidebar.contains(e.target) && 
+                !menuBtn.contains(e.target) && 
+                sidebar.classList.contains('open')) {
+                sidebar.classList.remove('open');
+            }
+        });
+
+        // Load user info
+        // function loadUserInfo() {
+        //     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            
+        //     if (currentUser.username) {
+        //         document.getElementById('userName').textContent = currentUser.displayName || currentUser.username;
+        //         document.getElementById('userRole').textContent = getRoleText(currentUser.role);
+        //         document.getElementById('userAvatar').textContent = (currentUser.displayName || currentUser.username).charAt(0).toUpperCase();
+        //     }
+        // }
+
+        // function getRoleText(role) {
+        //     switch(role) {
+        //         case 'ADMIN': return 'Quản trị viên';
+        //         case 'MUSICIAN': return 'Nhạc sĩ';
+        //         case 'USER': return 'Người dùng';
+        //         default: return 'Người dùng';
+        //     }
+        // }
+
+        // // Logout function
+        // function logout() {
+        //     if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
+        //         localStorage.removeItem('currentUser');
+        //         window.location.href = 'login.html';
+        //     }
+        // }
+
+        // // Check authentication
+        // function checkAuth() {
+        //     const currentUser = localStorage.getItem('currentUser');
+        //     if (!currentUser) {
+        //         window.location.href = 'login.html';
+        //         return;
+        //     }
+        //     loadUserInfo();
+        // }
+
+        // Simulate loading stats from database
+        function loadStats() {
+            // Giả lập dữ liệu từ database
+            const stats = {
+                artists: Math.floor(Math.random() * 200) + 100,
+                albums: Math.floor(Math.random() * 100) + 50,
+                tracks: Math.floor(Math.random() * 1500) + 800,
+                playlists: Math.floor(Math.random() * 400) + 200
+            };
+
+            document.getElementById('artistsCount').textContent = stats.artists;
+            document.getElementById('albumsCount').textContent = stats.albums;
+            document.getElementById('tracksCount').textContent = stats.tracks.toLocaleString();
+            document.getElementById('playlistsCount').textContent = stats.playlists;
+        }
+
+        // Initialize dashboard
+        window.addEventListener('load', function() {
+            checkAuth();
+            loadStats();
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            const sidebar = document.getElementById('sidebar');
+            if (window.innerWidth > 768) {
+                sidebar.classList.remove('open');
+            }
+        });
+    </script>
+</body>
+</html>

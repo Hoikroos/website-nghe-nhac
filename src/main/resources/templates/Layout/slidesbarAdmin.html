@@ -1,0 +1,43 @@
+<nav class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <h1>🎵 MusicManager</h1>
+        <p>Hệ thống quản lý nhạc</p>
+    </div>
+    <div class="sidebar-nav">
+        <div class="nav-group">
+            <div class="nav-group-title">Tổng quan</div>
+            <a th:href="@{/admin/dashboard}" class="nav-item active">
+                <i class="fas fa-home"></i>
+                Dashboard
+            </a>
+        </div>
+        <div class="nav-group">
+            <div class="nav-group-title">Quản lý</div>
+            <a th:href="@{/admin/employees}" class="nav-item">
+                <i class="fas fa-users"></i>
+                Quản lý nhân viên
+            </a>
+        </div>
+        <div class="nav-group">
+            <div class="nav-group-title">Cá nhân</div>
+            <a th:href="@{/admin/profile}" class="nav-item">
+                <i class="fas fa-user"></i>
+                Hồ sơ
+            </a>
+        </div>
+    </div>
+    <div class="user-info">
+        <div class="user-avatar" id="userAvatar" th:text="${#strings.substring(session.username,0,1)}">A</div>
+        <div class="user-name" id="userName" th:text="${session.username}">Admin User</div>
+        <div class="user-role" id="userRole" th:text="${session.role == 'ADMIN' ? 'Quản trị viên' 
+              : (session.role == 'MUSICIAN' ? 'Người đăng' : 'Người dùng')}">
+            Quản trị viên
+        </div>
+
+        <form th:action="@{/logout}" method="post">
+            <button class="btn btn-secondary" style="margin-top: 1rem; width: 100%;">
+                <i class="fas fa-sign-out-alt"></i> Đăng xuất
+            </button>
+        </form>
+    </div>
+</nav>

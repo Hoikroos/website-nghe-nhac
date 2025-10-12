@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MusicManager - Hồ sơ</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<style>
+    :root {
+        --background: #f1f5f9;
+        --foreground: #1f2937;
+        --card: #ffffff;
+        --card-foreground: #6b7280;
+        --primary: #1f2937;
+        --primary-foreground: #ffffff;
+        --secondary: #6b7280;
+        --accent: #8b5cf6;
+        --accent-foreground: #ffffff;
+        --border: #e5e7eb;
+        --muted: #f1f5f9;
+        --muted-foreground: #6b7280;
+        --radius: 0.5rem;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Open Sans', sans-serif;
+        background: linear-gradient(135deg, var(--background) 0%, #e2e8f0 100%);
+        color: var(--foreground);
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
+
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    .header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--border);
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        padding: 1rem 0;
+    }
+
+    .nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .logo {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        font-size: 1.8rem;
+        color: var(--accent);
+        text-decoration: none;
+    }
+
+    .nav-links {
+        display: flex;
+        list-style: none;
+        gap: 2rem;
+    }
+
+    .nav-links a {
+        text-decoration: none;
+        color: var(--foreground);
+        font-weight: 600;
+        transition: color 0.3s ease;
+    }
+
+    .nav-links a:hover {
+        color: var(--accent);
+    }
+
+    .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .search-bar {
+        display: flex;
+        align-items: center;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 0.5rem 1rem;
+        width: 300px;
+    }
+
+    .search-bar input {
+        border: none;
+        outline: none;
+        background: transparent;
+        flex: 1;
+        padding: 0.25rem;
+    }
+
+    .search-bar i {
+        color: var(--muted-foreground);
+    }
+
+    .user-account {
+        position: relative;
+    }
+
+    .user-button {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: var(--radius);
+        transition: background-color 0.3s ease;
+    }
+
+    .user-button:hover {
+        background: var(--muted);
+    }
+
+    .user-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .user-name {
+        font-weight: 600;
+        color: var(--foreground);
+    }
+
+    .guest-button {
+        background: var(--accent);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius);
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .guest-button:hover {
+        background: #7c3aed;
+        transform: translateY(-1px);
+    }
+
+    .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        min-width: 200px;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.3s ease;
+        z-index: 1001;
+    }
+
+    .dropdown-menu.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+        text-decoration: none;
+        color: var(--foreground);
+        transition: background-color 0.3s ease;
+        border: none;
+        background: none;
+        width: 100%;
+        text-align: left;
+        cursor: pointer;
+    }
+
+    .dropdown-item:hover {
+        background: var(--muted);
+    }
+
+    .dropdown-item i {
+        width: 16px;
+        color: var(--muted-foreground);
+    }
+
+    .dropdown-divider {
+        height: 1px;
+        background: var(--border);
+        margin: 0.5rem 0;
+    }
+
+    .logout-item {
+        color: #ef4444;
+    }
+
+    .logout-item:hover {
+        background: #fef2f2;
+    }
+
+    .main-content {
+        margin-top: 100px;
+        padding: 2rem 5rem;
+    }
+
+    .card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+        margin-bottom: 2rem;
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+    }
+
+    .card-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid #f7fafc;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #f7fafc;
+    }
+
+    .card-header h2 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #2d3748;
+    }
+
+    .card-content {
+        padding: 1.5rem;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 10px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        font-family: inherit;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+        color: white;
+        box-shadow: 0 2px 4px rgba(66, 153, 225, 0.2);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3);
+    }
+
+    .btn-secondary {
+        background-color: #e2e8f0;
+        color: #4a5568;
+        border: 1px solid #cbd5e0;
+    }
+
+    .btn-secondary:hover {
+        background-color: #cbd5e0;
+        color: #2d3748;
+    }
+
+    .profile-avatar-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding: 2rem;
+        background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .profile-avatar-large {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        font-weight: 600;
+        color: white;
+        margin-bottom: 1rem;
+        box-shadow: 0 8px 25px rgba(66, 153, 225, 0.3);
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #2d3748;
+        font-size: 0.875rem;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 0.875rem;
+        transition: all 0.2s ease;
+        background-color: white;
+        font-family: inherit;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #4299e1;
+        box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+    }
+
+    .form-group input:disabled,
+    .form-group textarea:disabled {
+        background-color: #f7fafc;
+        color: #a0aec0;
+        cursor: not-allowed;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .footer {
+        background: var(--primary);
+        color: var(--primary-foreground);
+        padding: 3rem 0 1rem;
+        margin-top: 4rem;
+    }
+
+    .footer-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .footer-section h3 {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .footer-section ul {
+        list-style: none;
+    }
+
+    .footer-section ul li {
+        margin-bottom: 0.5rem;
+    }
+
+    .footer-section ul li a {
+        color: var(--primary-foreground);
+        text-decoration: none;
+        opacity: 0.8;
+        transition: opacity 0.3s ease;
+    }
+
+    .footer-section ul li a:hover {
+        opacity: 1;
+    }
+
+    .footer-bottom {
+        text-align: center;
+        padding-top: 2rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        opacity: 0.8;
+    }
+
+    @media (max-width: 768px) {
+        .nav-links {
+            display: none;
+        }
+
+        .nav-right {
+            gap: 0.5rem;
+        }
+
+        .search-bar {
+            width: 200px;
+        }
+
+        .user-name {
+            display: none;
+        }
+
+        .main-content {
+            padding: 1rem;
+        }
+
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+
+        .form-actions {
+            flex-direction: column;
+        }
+
+        .btn {
+            justify-content: center;
+        }
+    }
+</style>
+
+<body>
+    <header class="header">
+        <nav class="nav container">
+            <a href="#" class="logo">
+                <i class="fas fa-music"></i> SoundWave
+            </a>
+
+            <ul class="nav-links">
+                <li><a th:href="@{/}">Trang Chủ</a></li>
+                <li><a href="#trending">Thịnh Hành</a></li>
+                <li><a href="#playlists">Playlist</a></li>
+                <li><a href="#artists">Nghệ Sĩ</a></li>
+            </ul>
+
+            <div class="nav-right">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Tìm kiếm bài hát, nghệ sĩ...">
+                </div>
+
+                <div class="user-account">
+                    <button class="user-button" id="userButton" onclick="toggleUserDropdown()" style="display: none;">
+                        <div class="user-avatar" id="userAvatar"></div>
+                        <span class="user-name" id="userName"></span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <button class="guest-button" id="guestButton" onclick="toggleGuestDropdown()">
+                        <i class="fas fa-user"></i> Tài khoản
+                    </button>
+                    <div class="dropdown-menu" id="userDropdown">
+                        <a th:href="@{/profile}" class="dropdown-item">
+                            <i class="fas fa-user"></i>
+                            <span>Hồ sơ cá nhân</span>
+                        </a>
+                        <a th:href="@{/favorite}" class="dropdown-item">
+                            <i class="fas fa-heart"></i>
+                            <span>Yêu thích</span>
+                        </a>
+                        <a th:href="@{/change-password}" class="dropdown-item">
+                            <i class="fas fa-key"></i>
+                            <span>Đổi mật khẩu</span>
+                        </a>
+                        <a th:href="@{/admin/dashboard}" class="dropdown-item" id="adminLink" style="display: none;">
+                            <i class="fas fa-cog"></i>
+                            <span>Quản trị</span>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-item logout-item" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Đăng xuất</span>
+                        </button>
+                    </div>
+                    <div class="dropdown-menu" id="guestDropdown">
+                        <a th:href="@{/Dangnhap}" class="dropdown-item">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>Đăng nhập</span>
+                        </a>
+                        <a th:href="@{/Dangky}" class="dropdown-item">
+                            <i class="fas fa-user-plus"></i>
+                            <span>Đăng ký</span>
+                        </a>
+                        <a th:href="@{/forgot-password}" class="dropdown-item">
+                            <i class="fas fa-unlock-alt"></i>
+                            <span>Quên mật khẩu</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main class="main-content">
+        <div class="profile-container">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Thông tin cá nhân</h2>
+                    <button class="btn btn-primary" onclick="toggleEditMode()">
+                        <i class="fas fa-edit"></i>
+                        <span id="editButtonText">Chỉnh sửa</span>
+                    </button>
+                </div>
+                <div class="card-content">
+                    <form id="profileForm" onsubmit="saveProfile(event)">
+                        <div class="profile-avatar-section">
+                            <div class="profile-avatar-large" id="profileAvatarLarge">A</div>
+                            <button type="button" class="btn btn-secondary" onclick="changeAvatar()" disabled
+                                id="changeAvatarBtn">
+                                <i class="fas fa-camera"></i>
+                                Đổi ảnh
+                            </button>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="profileName">Họ tên *</label>
+                                <input type="text" id="profileName" name="name" value="Admin User" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label for="profileEmail">Email *</label>
+                                <input type="email" id="profileEmail" name="email" value="admin@musicmanager.com"
+                                    disabled>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="profilePhone">Số điện thoại</label>
+                                <input type="tel" id="profilePhone" name="phone" value="+84 123 456 789" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label for="profileJoinDate">Ngày gia nhập</label>
+                                <input type="date" id="profileJoinDate" name="joinDate" value="2023-01-15" disabled>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="profileBio">Giới thiệu</label>
+                            <textarea id="profileBio" name="bio" rows="4" disabled
+                                placeholder="Viết vài dòng giới thiệu về bản thân...">Quản trị viên hệ thống với hơn 5 năm kinh nghiệm trong lĩnh vực công nghệ thông tin và quản lý dữ liệu.</textarea>
+                        </div>
+                        <div class="form-actions" id="profileFormActions" style="display: none;">
+                            <button type="button" class="btn btn-secondary" onclick="cancelEdit()">Hủy</button>
+                            <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>SoundWave</h3>
+                    <p>Nền tảng nghe nhạc trực tuyến hàng đầu Việt Nam với hàng triệu bài hát chất lượng cao.</p>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Khám Phá</h3>
+                    <ul>
+                        <li><a href="#">Thịnh Hành</a></li>
+                        <li><a href="#">Mới Phát Hành</a></li>
+                        <li><a href="#">Top Charts</a></li>
+                        <li><a href="#">Podcast</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Hỗ Trợ</h3>
+                    <ul>
+                        <li><a href="#">Trung Tâm Trợ Giúp</a></li>
+                        <li><a href="#">Liên Hệ</a></li>
+                        <li><a href="#">Báo Lỗi</a></li>
+                        <li><a href="#">Góp Ý</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Kết Nối</h3>
+                    <ul>
+                        <li><a href="#"><i class="fab fa-facebook"></i> Facebook</a></li>
+                        <li><a href="#"><i class="fab fa-instagram"></i> Instagram</a></li>
+                        <li><a href="#"><i class="fab fa-youtube"></i> YouTube</a></li>
+                        <li><a href="#"><i class="fab fa-tiktok"></i> TikTok</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2024 SoundWave. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </div>
+    </footer>
+    <script>
+        function updateUserInterface() {
+            const userButton = document.getElementById('userButton');
+            const guestButton = document.getElementById('guestButton');
+            const userAvatar = document.getElementById('userAvatar');
+            const userName = document.getElementById('userName');
+            const adminLink = document.getElementById('adminLink');
+
+            fetch('/api/auth/current-user', {
+                method: 'GET',
+                credentials: 'include'
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else if (response.status === 401) {
+                        throw new Error('Chưa đăng nhập');
+                    } else {
+                        throw new Error('Lỗi hệ thống');
+                    }
+                })
+                .then(data => {
+                    isLoggedIn = true;
+                    userButton.style.display = 'flex';
+                    guestButton.style.display = 'none';
+                    userName.textContent = data.fullname || data.username || 'Người dùng';
+                    const avatarText = (data.fullname || data.username || 'U').charAt(0).toUpperCase();
+                    userAvatar.textContent = avatarText;
+                    adminLink.style.display = data.role === 'ADMIN' ? 'block' : 'none';
+                })
+                .catch(error => {
+                    isLoggedIn = false;
+                    userButton.style.display = 'none';
+                    guestButton.style.display = 'block';
+                    userAvatar.textContent = 'U';
+                    userName.textContent = '';
+                    adminLink.style.display = 'none';
+                });
+        }
+
+        function logout() {
+            fetch('/logout', {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+                .then(response => {
+                    if (response.ok || response.redirected) {
+                        isLoggedIn = false;
+                        updateUserInterface();
+                        window.location.href = '/';
+                    } else {
+                        showNotification('Lỗi khi đăng xuất!');
+                    }
+                })
+                .catch(error => {
+                    console.error('Logout error:', error);
+                    showNotification('Lỗi hệ thống khi đăng xuất!');
+                });
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        background: var(--accent);
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: var(--radius);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        z-index: 1001;
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+    `;
+            notification.textContent = message;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        function toggleUserDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            const guestDropdown = document.getElementById('guestDropdown');
+            guestDropdown.classList.remove('show');
+            dropdown.classList.toggle('show');
+        }
+
+        function toggleGuestDropdown() {
+            const dropdown = document.getElementById('guestDropdown');
+            const userDropdown = document.getElementById('userDropdown');
+            userDropdown.classList.remove('show');
+            dropdown.classList.toggle('show');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function (event) {
+            const userAccount = document.querySelector('.user-account');
+            const userDropdown = document.getElementById('userDropdown');
+            const guestDropdown = document.getElementById('guestDropdown');
+
+            if (!userAccount.contains(event.target)) {
+                userDropdown.classList.remove('show');
+                guestDropdown.classList.remove('show');
+            }
+        });
+
+        // Profile Management Functions
+        let isEditMode = false
+
+        function toggleEditMode() {
+            isEditMode = !isEditMode
+            const form = document.getElementById("profileForm")
+            const inputs = form.querySelectorAll("input, select, textarea")
+            const editButton = document.getElementById("editButtonText")
+            const formActions = document.getElementById("profileFormActions")
+            const changeAvatarBtn = document.getElementById("changeAvatarBtn")
+
+            inputs.forEach((input) => {
+                if (input.name !== "joinDate") {
+                    // Keep join date readonly
+                    input.disabled = !isEditMode
+                }
+            })
+
+            if (changeAvatarBtn) {
+                changeAvatarBtn.disabled = !isEditMode
+            }
+
+            editButton.textContent = isEditMode ? "Hủy" : "Chỉnh sửa"
+            formActions.style.display = isEditMode ? "flex" : "none"
+
+            if (!isEditMode) {
+                // Reset form to original values if canceling
+                loadProfileData()
+            }
+        }
+
+        function loadProfileData() {
+            // This would typically load from a server or localStorage
+            // For demo purposes, we'll use default values
+            document.getElementById("profileName").value = "Admin User"
+            document.getElementById("profileEmail").value = "admin@musicmanager.com"
+            document.getElementById("profilePhone").value = "+84 123 456 789"
+            document.getElementById("profileJoinDate").value = "2023-01-15"
+            document.getElementById("profileBio").value =
+                "Quản trị viên hệ thống với hơn 5 năm kinh nghiệm trong lĩnh vực công nghệ thông tin và quản lý dữ liệu."
+        }
+
+        function cancelEdit() {
+            toggleEditMode()
+        }
+
+        function saveProfile(event) {
+            event.preventDefault()
+
+            // Here you would typically save to a server
+            // For demo purposes, we'll just show a success message
+
+            toggleEditMode()
+            alert("Cập nhật hồ sơ thành công!")
+        }
+
+        function changeAvatar() {
+            // This would typically open a file picker
+            alert("Chức năng đổi ảnh đại diện sẽ được cập nhật trong phiên bản tiếp theo.")
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function () {
+            updateUserInterface();
+            loadProfileData();
+        });
+    </script>
+</body>
+
+</html>

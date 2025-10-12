@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MusicManager - Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+    <div th:replace="~{/layout/slidesbarAdmin}"></div>
+    <main class="main-content">
+        <div class="page-header">
+            <h1>Dashboard</h1>
+            <p>Tổng quan hệ thống quản lý nhạc</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="totalEmployees">0</h3>
+                    <p>Tổng số người dùng</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-user-check"></i>
+                </div>
+                <div class="stat-content">
+                    <h3 id="activeEmployees">0</h3>
+                    <p>Nhân viên hoạt động</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>98%</h3>
+                    <p>Hiệu suất hệ thống</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Hoạt động gần đây</h2>
+                </div>
+                <div class="card-content">
+                    <div class="activity-list" id="activityList">
+                        <div class="activity-item">
+                            <i class="fas fa-user-plus"></i>
+                            <span>Thêm nhân viên mới: Nguyễn Văn A</span>
+                            <small>2 giờ trước</small>
+                        </div>
+                        <div class="activity-item">
+                            <i class="fas fa-edit"></i>
+                            <span>Cập nhật hồ sơ cá nhân</span>
+                            <small>5 giờ trước</small>
+                        </div>
+                        <div class="activity-item">
+                            <i class="fas fa-users"></i>
+                            <span>Tạo phòng ban mới: IT Support</span>
+                            <small>1 ngày trước</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/js/script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MusicManager - Quản lý nhân viên</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+    <div th:replace="~{/layout/slidesbarAdmin}"></div>
+    <main class="main-content">
+        <div class="page-header">
+            <h1>Quản lý nhân viên</h1>
+            <button class="btn btn-primary" onclick="openEmployeeModal()">
+                <i class="fas fa-plus"></i>
+                Thêm nhân viên
+            </button>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h2>Danh sách nhân viên</h2>
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Tìm kiếm nhân viên..." onkeyup="searchEmployees()">
+                    <i class="fas fa-search"></i>
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="table-container">
+                    <table class="employee-table">
+                        <thead>
+                            <tr>
+                                <th>Họ tên</th>
+                                <th>Email</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="employeeTableBody">
+                            <tr th:each="employee : ${employees}">
+                                <td th:text="${employee.fullname} ?: 'N/A'"></td>
+                                <td th:text="${employee.email}"></td>
+                                <td>
+                                    <span
+                                        th:class="'status-badge ' + (${employee.active} ? 'status-active' : 'status-inactive')"
+                                        th:text="${employee.active} ? 'Hoạt động' : 'Không hoạt động'"></span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-secondary"
+                                        th:onclick="'viewEmployee(' + ${employee.id} + ')'"
+                                        style="margin-right: 0.5rem;">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="btn btn-danger"
+                                        th:onclick="'deleteEmployee(' + ${employee.id} + ')'">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Employee Modal -->
+    <div id="employeeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Thêm nhân viên mới</h2>
+                <span class="close" onclick="closeEmployeeModal()">&times;</span>
+            </div>
+            <form id="employeeForm" class="modal-form" onsubmit="saveEmployee(event)">
+                <div class="form-group">
+                    <label for="employeeName">Họ tên *</label>
+                    <input type="text" id="employeeName" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="employeeEmail">Email *</label>
+                    <input type="email" id="employeeEmail" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="employeePassword">Mật khẩu *</label>
+                    <input type="password" id="employeePassword" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="employeeConfirmPassword">Nhập lại mật khẩu *</label>
+                    <input type="password" id="employeeConfirmPassword" name="confirmPassword" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeEmployeeModal()">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="viewEmployeeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Chi tiết nhân viên</h2>
+                <span class="close" onclick="closeViewEmployeeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Ảnh đại diện:</label>
+                    <div class="employee-image-container">
+                        <img id="viewEmployeeImage" src="/images/default-avatar.png" alt="Ảnh nhân viên"
+                            class="employee-image">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Họ tên:</label>
+                    <p id="viewEmployeeName"></p>
+                </div>
+                <div class="form-group">
+                    <label>Email:</label>
+                    <p id="viewEmployeeEmail"></p>
+                </div>
+                <div class="form-group">
+                    <label for="viewEmployeeStatus">Trạng thái:</label>
+                    <select id="viewEmployeeStatus" name="status" onchange="updateEmployeeStatus()">
+                        <option value="true">Hoạt động</option>
+                        <option value="false">Không hoạt động</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeViewEmployeeModal()">Đóng</button>
+            </div>
+        </div>
+    </div>
+    <script src="/js/script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MusicManager - Hồ sơ</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body>
+    <div th:replace="~{/layout/slidesbarAdmin}"></div>
+
+    <main class="main-content">
+        <div class="page-header">
+            <h1>Hồ sơ cá nhân</h1>
+            <p>Quản lý thông tin cá nhân của bạn</p>
+        </div>
+
+        <div class="profile-container">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Thông tin cá nhân</h2>
+                    <button class="btn btn-primary" onclick="toggleEditMode()">
+                        <i class="fas fa-edit"></i>
+                        <span id="editButtonText">Chỉnh sửa</span>
+                    </button>
+                </div>
+                <div class="card-content">
+                    <form id="profileForm" onsubmit="saveProfile(event)">
+                        <div class="profile-avatar-section">
+                            <img id="profileAvatarLarge" src="/images/default-avatar.png" alt="Ảnh đại diện" class="profile-avatar-large">
+                            <button type="button" class="btn btn-secondary" onclick="changeAvatar()" disabled id="changeAvatarBtn">
+                                <i class="fas fa-camera"></i>
+                                Đổi ảnh
+                            </button>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="profileName">Họ tên *</label>
+                                <input type="text" id="profileName" name="name" value="Admin User" disabled required>
+                            </div>
+                            <div class="form-group">
+                                <label for="profileEmail">Email *</label>
+                                <input type="email" id="profileEmail" name="email" value="admin@musicmanager.com" disabled required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="profileJoinDate">Ngày gia nhập</label>
+                                <input type="date" id="profileJoinDate" name="joinDate" value="2023-01-15" disabled>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="profileBio">Giới thiệu</label>
+                            <textarea id="profileBio" name="bio" rows="4" disabled
+                                placeholder="Viết vài dòng giới thiệu về bản thân..."></textarea>
+                        </div>
+                        <div class="form-actions" id="profileFormActions" style="display: none;">
+                            <button type="button" class="btn btn-secondary" onclick="cancelEdit()">Hủy</button>
+                            <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2>Đổi mật khẩu</h2>
+                </div>
+                <div class="card-content">
+                    <form id="passwordForm" onsubmit="changePassword(event)">
+                        <div class="form-group">
+                            <label for="currentPassword">Mật khẩu hiện tại *</label>
+                            <input type="password" id="currentPassword" name="currentPassword" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="newPassword">Mật khẩu mới *</label>
+                            <input type="password" id="newPassword" name="newPassword" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword">Xác nhận mật khẩu mới *</label>
+                            <input type="password" id="confirmPassword" name="confirmPassword" required>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Đổi mật khẩu</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/js/script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yêu thích - Hệ thống quản lý nhạc</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600;700&family=Open+Sans:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --background: #ffffff;
+            --foreground: #1f2937;
+            --card: #f1f5f9;
+            --card-foreground: #1f2937;
+            --primary: #1f2937;
+            --primary-foreground: #ffffff;
+            --secondary: #6b7280;
+            --secondary-foreground: #ffffff;
+            --muted: #f1f5f9;
+            --muted-foreground: #6b7280;
+            --accent: #8b5cf6;
+            --accent-foreground: #ffffff;
+            --destructive: #be123c;
+            --destructive-foreground: #ffffff;
+            --border: #e5e7eb;
+            --input: #ffffff;
+            --ring: rgba(139, 92, 246, 0.5);
+            --radius: 0.5rem;
+            --sidebar: #f1f5f9;
+            --sidebar-foreground: #1f2937;
+            --sidebar-primary: #1f2937;
+            --sidebar-primary-foreground: #ffffff;
+            --sidebar-accent: #8b5cf6;
+            --sidebar-accent-foreground: #ffffff;
+            --sidebar-border: #e5e7eb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: var(--background);
+            color: var(--foreground);
+            line-height: 1.6;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar styles */
+        .sidebar {
+            width: 280px;
+            background: var(--sidebar);
+            border-right: 1px solid var(--sidebar-border);
+            padding: 1.5rem 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 0 1.5rem 2rem;
+            border-bottom: 1px solid var(--sidebar-border);
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar-header h1 {
+            font-family: 'Work Sans', sans-serif;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--sidebar-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-nav {
+            padding: 0 1rem;
+        }
+
+        .nav-group {
+            margin-bottom: 2rem;
+        }
+
+        .nav-group-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--muted-foreground);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.75rem;
+            padding: 0 0.5rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 0.5rem;
+            margin-bottom: 0.25rem;
+            border-radius: var(--radius);
+            color: var(--sidebar-foreground);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: var(--background);
+            color: var(--sidebar-accent);
+        }
+
+        .nav-item.active {
+            background: var(--sidebar-accent);
+            color: var(--sidebar-accent-foreground);
+        }
+
+        .nav-item i {
+            width: 20px;
+            margin-right: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .user-info {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--sidebar-border);
+            margin-top: auto;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--sidebar-accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--sidebar-accent-foreground);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .user-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-role {
+            font-size: 0.8rem;
+            color: var(--muted-foreground);
+        }
+
+        /* Main content */
+        .main-content {
+            flex: 1;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .main-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .main-header h1 {
+            font-family: 'Work Sans', sans-serif;
+            font-weight: 700;
+            font-size: 2rem;
+            color: var(--primary);
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: var(--accent-foreground);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: var(--secondary-foreground);
+        }
+
+        .btn-danger {
+            background: var(--destructive);
+            color: var(--destructive-foreground);
+        }
+
+        .btn-sm {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.8rem;
+        }
+
+        /* Filter tabs */
+        .filter-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .filter-tab {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            background: none;
+            color: var(--muted-foreground);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .filter-tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .filter-tab:hover {
+            color: var(--accent);
+        }
+
+        /* Favorites grid */
+        .favorites-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .favorite-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .favorite-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .favorite-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .favorite-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .favorite-icon.artist {
+            background: #ec4899;
+        }
+
+        .favorite-icon.album {
+            background: #f59e0b;
+        }
+
+        .favorite-icon.track {
+            background: #10b981;
+        }
+
+        .favorite-icon.playlist {
+            background: var(--accent);
+        }
+
+        .favorite-info h3 {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .favorite-info p {
+            font-size: 0.9rem;
+            color: var(--muted-foreground);
+        }
+
+        .favorite-meta {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: var(--muted-foreground);
+        }
+
+        .favorite-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .type-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            background: var(--muted);
+            color: var(--foreground);
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--muted-foreground);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: var(--muted-foreground);
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--foreground);
+        }
+
+        /* Mobile responsive */
+        .mobile-menu-btn {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1000;
+            background: var(--accent);
+            color: var(--accent-foreground);
+            border: none;
+            padding: 0.75rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 999;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+                padding-top: 4rem;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .favorites-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filter-tabs {
+                flex-wrap: wrap;
+            }
+        }
+
+        :root {
+            --background: #f1f5f9;
+            --foreground: #1f2937;
+            --card: #ffffff;
+            --card-foreground: #6b7280;
+            --primary: #1f2937;
+            --primary-foreground: #ffffff;
+            --secondary: #6b7280;
+            --accent: #8b5cf6;
+            --accent-foreground: #ffffff;
+            --border: #e5e7eb;
+            --muted: #f1f5f9;
+            --muted-foreground: #6b7280;
+            --radius: 0.5rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, var(--background) 0%, #e2e8f0 100%);
+            color: var(--foreground);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1rem 0;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 1.8rem;
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--foreground);
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 0.5rem 1rem;
+            width: 300px;
+        }
+
+        .search-bar input {
+            border: none;
+            outline: none;
+            background: transparent;
+            flex: 1;
+            padding: 0.25rem;
+        }
+
+        .search-bar i {
+            color: var(--muted-foreground);
+        }
+
+        .user-account {
+            position: relative;
+        }
+
+        .user-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: var(--radius);
+            transition: background-color 0.3s ease;
+        }
+
+        .user-button:hover {
+            background: var(--muted);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: var(--foreground);
+        }
+
+        .guest-button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .guest-button:hover {
+            background: #7c3aed;
+            transform: translateY(-1px);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 1001;
+        }
+
+        .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            text-decoration: none;
+            color: var(--foreground);
+            transition: background-color 0.3s ease;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .dropdown-item:hover {
+            background: var(--muted);
+        }
+
+        .dropdown-item i {
+            width: 16px;
+            color: var(--muted-foreground);
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 0.5rem 0;
+        }
+
+        .logout-item {
+            color: #ef4444;
+        }
+
+        .logout-item:hover {
+            background: #fef2f2;
+        }
+
+        .footer {
+            background: var(--primary);
+            color: var(--primary-foreground);
+            padding: 3rem 0 1rem;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section ul li a {
+            color: var(--primary-foreground);
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        .footer-section ul li a:hover {
+            opacity: 1;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .nav-right {
+                gap: 0.5rem;
+            }
+
+            .search-bar {
+                width: 200px;
+            }
+
+            .user-name {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <nav class="nav container">
+            <a href="#" class="logo">
+                <i class="fas fa-music"></i> SoundWave
+            </a>
+
+            <ul class="nav-links">
+                <li><a th:href="@{/}">Trang Chủ</a></li>
+                <li><a href="#trending">Thịnh Hành</a></li>
+                <li><a href="#playlists">Playlist</a></li>
+                <li><a href="#artists">Nghệ Sĩ</a></li>
+            </ul>
+
+            <div class="nav-right">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Tìm kiếm bài hát, nghệ sĩ...">
+                </div>
+
+                <div class="user-account">
+                    <button class="user-button" id="userButton" onclick="toggleUserDropdown()" style="display: none;">
+                        <div class="user-avatar" id="userAvatar"></div>
+                        <span class="user-name" id="userName"></span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <button class="guest-button" id="guestButton" onclick="toggleGuestDropdown()">
+                        <i class="fas fa-user"></i> Tài khoản
+                    </button>
+                    <div class="dropdown-menu" id="userDropdown">
+                        <a th:href="@{/profile}" class="dropdown-item">
+                            <i class="fas fa-user"></i>
+                            <span>Hồ sơ cá nhân</span>
+                        </a>
+                        <a th:href="@{/favorite}" class="dropdown-item">
+                            <i class="fas fa-heart"></i>
+                            <span>Yêu thích</span>
+                        </a>
+                        <a th:href="@{/change-password}" class="dropdown-item">
+                            <i class="fas fa-key"></i>
+                            <span>Đổi mật khẩu</span>
+                        </a>
+                        <a th:href="@{/admin/dashboard}" class="dropdown-item" id="adminLink" style="display: none;">
+                            <i class="fas fa-cog"></i>
+                            <span>Quản trị</span>
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <button class="dropdown-item logout-item" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span>Đăng xuất</span>
+                        </button>
+                    </div>
+                    <div class="dropdown-menu" id="guestDropdown">
+                        <a th:href="@{/Dangnhap}" class="dropdown-item">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>Đăng nhập</span>
+                        </a>
+                        <a th:href="@{/Dangky}" class="dropdown-item">
+                            <i class="fas fa-user-plus"></i>
+                            <span>Đăng ký</span>
+                        </a>
+                        <a th:href="@{/forgot-password}" class="dropdown-item">
+                            <i class="fas fa-unlock-alt"></i>
+                            <span>Quên mật khẩu</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <main class="main-content">
+        <div class="main-header">
+            <h1>Yêu thích</h1>
+            <button class="btn btn-secondary" onclick="clearAllFavorites()">
+                <i class="fas fa-trash"></i>
+                Xóa tất cả
+            </button>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="filter-tabs">
+            <button class="filter-tab active" onclick="filterFavorites('all')">
+                <i class="fas fa-heart"></i>
+                Tất cả
+            </button>
+            <button class="filter-tab" onclick="filterFavorites('artist')">
+                <i class="fas fa-microphone"></i>
+                Nghệ sĩ
+            </button>
+            <button class="filter-tab" onclick="filterFavorites('album')">
+                <i class="fas fa-compact-disc"></i>
+                Album
+            </button>
+            <button class="filter-tab" onclick="filterFavorites('track')">
+                <i class="fas fa-music"></i>
+                Bài hát
+            </button>
+            <button class="filter-tab" onclick="filterFavorites('playlist')">
+                <i class="fas fa-list"></i>
+                Playlist
+            </button>
+        </div>
+
+        <!-- Favorites Grid -->
+        <div class="favorites-grid" id="favoritesGrid">
+            <!-- Favorites will be loaded here -->
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <i class="fas fa-heart-broken"></i>
+            <h3>Chưa có mục yêu thích</h3>
+            <p>Hãy thêm những nghệ sĩ, album, bài hát hoặc playlist yêu thích của bạn</p>
+        </div>
+    </main>
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>SoundWave</h3>
+                    <p>Nền tảng nghe nhạc trực tuyến hàng đầu Việt Nam với hàng triệu bài hát chất lượng cao.</p>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Khám Phá</h3>
+                    <ul>
+                        <li><a href="#">Thịnh Hành</a></li>
+                        <li><a href="#">Mới Phát Hành</a></li>
+                        <li><a href="#">Top Charts</a></li>
+                        <li><a href="#">Podcast</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Hỗ Trợ</h3>
+                    <ul>
+                        <li><a href="#">Trung Tâm Trợ Giúp</a></li>
+                        <li><a href="#">Liên Hệ</a></li>
+                        <li><a href="#">Báo Lỗi</a></li>
+                        <li><a href="#">Góp Ý</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Kết Nối</h3>
+                    <ul>
+                        <li><a href="#"><i class="fab fa-facebook"></i> Facebook</a></li>
+                        <li><a href="#"><i class="fab fa-instagram"></i> Instagram</a></li>
+                        <li><a href="#"><i class="fab fa-youtube"></i> YouTube</a></li>
+                        <li><a href="#"><i class="fab fa-tiktok"></i> TikTok</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2024 SoundWave. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </div>
+    </footer>
+    <script>
+
+        function init() {
+            updateUserInterface();
+            loadData();
+            renderFavorites();
+        }
+
+        function updateUserInterface() {
+            const userButton = document.getElementById('userButton');
+            const guestButton = document.getElementById('guestButton');
+            const userAvatar = document.getElementById('userAvatar');
+            const userName = document.getElementById('userName');
+            const adminLink = document.getElementById('adminLink');
+
+            fetch('/api/auth/current-user', {
+                method: 'GET',
+                credentials: 'include'
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else if (response.status === 401) {
+                        throw new Error('Chưa đăng nhập');
+                    } else {
+                        throw new Error('Lỗi hệ thống');
+                    }
+                })
+                .then(data => {
+                    isLoggedIn = true;
+                    userButton.style.display = 'flex';
+                    guestButton.style.display = 'none';
+                    userName.textContent = data.fullname || data.username || 'Người dùng';
+                    const avatarText = (data.fullname || data.username || 'U').charAt(0).toUpperCase();
+                    userAvatar.textContent = avatarText;
+                    adminLink.style.display = data.role === 'ADMIN' ? 'block' : 'none';
+                })
+                .catch(error => {
+                    isLoggedIn = false;
+                    userButton.style.display = 'none';
+                    guestButton.style.display = 'block';
+                    userAvatar.textContent = 'U';
+                    userName.textContent = '';
+                    adminLink.style.display = 'none';
+                });
+        }
+
+        function logout() {
+            fetch('/logout', {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+                .then(response => {
+                    if (response.ok || response.redirected) {
+                        isLoggedIn = false;
+                        updateUserInterface();
+                        window.location.href = '/';
+                    } else {
+                        showNotification('Lỗi khi đăng xuất!');
+                    }
+                })
+                .catch(error => {
+                    console.error('Logout error:', error);
+                    showNotification('Lỗi hệ thống khi đăng xuất!');
+                });
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        background: var(--accent);
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: var(--radius);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        z-index: 1001;
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+    `;
+            notification.textContent = message;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        function loadData() {
+            // Load favorites
+            const savedFavorites = localStorage.getItem('favorites');
+            if (savedFavorites) {
+                favorites = JSON.parse(savedFavorites);
+            } else {
+                favorites = sampleFavorites;
+                saveFavoritesToStorage();
+            }
+
+            // Load other data
+            artists = JSON.parse(localStorage.getItem('artists') || '[]');
+            albums = JSON.parse(localStorage.getItem('albums') || '[]');
+            tracks = JSON.parse(localStorage.getItem('tracks') || '[]');
+            playlists = JSON.parse(localStorage.getItem('playlists') || '[]');
+        }
+
+        // Sidebar functions
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+
+        // Favorites management
+        function renderFavorites() {
+            const grid = document.getElementById('favoritesGrid');
+            const emptyState = document.getElementById('emptyState');
+
+            let filteredFavorites = favorites;
+            if (currentFilter !== 'all') {
+                filteredFavorites = favorites.filter(fav => {
+                    switch (currentFilter) {
+                        case 'artist': return fav.artistId;
+                        case 'album': return fav.albumId;
+                        case 'track': return fav.trackId;
+                        case 'playlist': return fav.playlistId;
+                        default: return true;
+                    }
+                });
+            }
+
+            if (filteredFavorites.length === 0) {
+                grid.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            grid.style.display = 'grid';
+            emptyState.style.display = 'none';
+
+            grid.innerHTML = filteredFavorites.map(favorite => {
+                const item = getFavoriteItem(favorite);
+                if (!item) return '';
+
+                return `
+            <div class="favorite-card">
+                <div class="favorite-header">
+                    <div class="favorite-icon ${item.type}">
+                        <i class="fas fa-${item.icon}"></i>
+                    </div>
+                    <div class="favorite-info">
+                        <h3>${item.title}</h3>
+                        <p>${item.subtitle}</p>
+                    </div>
+                </div>
+                <div class="favorite-meta">
+                    <span class="type-badge">${item.typeText}</span>
+                    <span>Thêm: ${formatDate(favorite.createdAt)}</span>
+                </div>
+                <div class="favorite-actions">
+                    <button class="btn btn-sm btn-secondary" onclick="viewItem('${item.type}', ${item.id})">
+                        <i class="fas fa-eye"></i>
+                        Xem
+                    </button>
+                    <button class="btn btn-sm btn-danger" onclick="removeFavorite(${favorite.id})">
+                        <i class="fas fa-heart-broken"></i>
+                        Bỏ thích
+                    </button>
+                </div>
+            </div>
+        `;
+            }).join('');
+        }
+
+        function getFavoriteItem(favorite) {
+            if (favorite.artistId) {
+                const artist = artists.find(a => a.id === favorite.artistId);
+                if (!artist) return null;
+                return {
+                    id: artist.id,
+                    type: 'artist',
+                    icon: 'microphone',
+                    title: artist.name,
+                    subtitle: artist.bio || 'Nghệ sĩ',
+                    typeText: 'Nghệ sĩ'
+                };
+            }
+
+            if (favorite.albumId) {
+                const album = albums.find(a => a.id === favorite.albumId);
+                if (!album) return null;
+                const artist = artists.find(a => a.id === album.artistId);
+                return {
+                    id: album.id,
+                    type: 'album',
+                    icon: 'compact-disc',
+                    title: album.title,
+                    subtitle: artist ? artist.name : 'Nghệ sĩ không xác định',
+                    typeText: 'Album'
+                };
+            }
+
+            if (favorite.trackId) {
+                const track = tracks.find(t => t.id === favorite.trackId);
+                if (!track) return null;
+                const album = albums.find(a => a.id === track.albumId);
+                return {
+                    id: track.id,
+                    type: 'track',
+                    icon: 'music',
+                    title: track.title,
+                    subtitle: album ? album.title : 'Không có album',
+                    typeText: 'Bài hát'
+                };
+            }
+
+            if (favorite.playlistId) {
+                const playlist = playlists.find(p => p.id === favorite.playlistId);
+                if (!playlist) return null;
+                return {
+                    id: playlist.id,
+                    type: 'playlist',
+                    icon: 'list',
+                    title: playlist.title,
+                    subtitle: playlist.description || 'Playlist',
+                    typeText: 'Playlist'
+                };
+            }
+
+            return null;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('vi-VN');
+        }
+
+        function filterFavorites(type) {
+            currentFilter = type;
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            renderFavorites();
+        }
+
+        function viewItem(type, id) {
+            switch (type) {
+                case 'artist':
+                    window.location.href = 'artists.html';
+                    break;
+                case 'album':
+                    window.location.href = 'albums.html';
+                    break;
+                case 'track':
+                    window.location.href = 'tracks.html';
+                    break;
+                case 'playlist':
+                    window.location.href = 'playlists.html';
+                    break;
+            }
+        }
+
+        function removeFavorite(favoriteId) {
+            if (confirm('Bạn có chắc chắn muốn bỏ thích mục này?')) {
+                favorites = favorites.filter(f => f.id !== favoriteId);
+                saveFavoritesToStorage();
+                renderFavorites();
+                alert('Đã bỏ thích thành công!');
+            }
+        }
+
+        function clearAllFavorites() {
+            if (confirm('Bạn có chắc chắn muốn xóa tất cả mục yêu thích?')) {
+                favorites = [];
+                saveFavoritesToStorage();
+                renderFavorites();
+                alert('Đã xóa tất cả mục yêu thích!');
+            }
+        }
+
+        function saveFavoritesToStorage() {
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+        }
+
+        function toggleUserDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            const guestDropdown = document.getElementById('guestDropdown');
+            guestDropdown.classList.remove('show');
+            dropdown.classList.toggle('show');
+        }
+
+        function toggleGuestDropdown() {
+            const dropdown = document.getElementById('guestDropdown');
+            const userDropdown = document.getElementById('userDropdown');
+            userDropdown.classList.remove('show');
+            dropdown.classList.toggle('show');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function (event) {
+            const userAccount = document.querySelector('.user-account');
+            const userDropdown = document.getElementById('userDropdown');
+            const guestDropdown = document.getElementById('guestDropdown');
+
+            if (!userAccount.contains(event.target)) {
+                userDropdown.classList.remove('show');
+                guestDropdown.classList.remove('show');
+            }
+        });
+
+        // Initialize when page loads
+        window.addEventListener('load', init);
+
+    </script>
+</body>
+
+</html>

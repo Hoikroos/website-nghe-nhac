@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hồ sơ nhân viên - Hệ thống quản lý</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600;700&family=Open+Sans:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --background: #ffffff;
+            --foreground: #1f2937;
+            --card: #f1f5f9;
+            --card-foreground: #1f2937;
+            --primary: #1f2937;
+            --primary-foreground: #ffffff;
+            --secondary: #6b7280;
+            --secondary-foreground: #ffffff;
+            --muted: #f1f5f9;
+            --muted-foreground: #6b7280;
+            --accent: #8b5cf6;
+            --accent-foreground: #ffffff;
+            --destructive: #be123c;
+            --destructive-foreground: #ffffff;
+            --border: #e5e7eb;
+            --input: #ffffff;
+            --ring: rgba(139, 92, 246, 0.5);
+            --radius: 0.5rem;
+            --sidebar: #f1f5f9;
+            --sidebar-foreground: #1f2937;
+            --sidebar-primary: #1f2937;
+            --sidebar-primary-foreground: #ffffff;
+            --sidebar-accent: #8b5cf6;
+            --sidebar-accent-foreground: #ffffff;
+            --sidebar-border: #e5e7eb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: var(--background);
+            color: var(--foreground);
+            line-height: 1.6;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--sidebar);
+            border-right: 1px solid var(--sidebar-border);
+            padding: 1.5rem 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 0 1.5rem 2rem;
+            border-bottom: 1px solid var(--sidebar-border);
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar-header h1 {
+            font-family: 'Work Sans', sans-serif;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--sidebar-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-header p {
+            color: var(--muted-foreground);
+            font-size: 0.9rem;
+        }
+
+        .sidebar-nav {
+            padding: 0 1rem;
+        }
+
+        .nav-group {
+            margin-bottom: 2rem;
+        }
+
+        .nav-group-title {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--muted-foreground);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.75rem;
+            padding: 0 0.5rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 0.5rem;
+            margin-bottom: 0.25rem;
+            border-radius: var(--radius);
+            color: var(--sidebar-foreground);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background: var(--background);
+            color: var(--sidebar-accent);
+        }
+
+        .nav-item.active {
+            background: var(--sidebar-accent);
+            color: var(--sidebar-accent-foreground);
+        }
+
+        .nav-item i {
+            width: 20px;
+            margin-right: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .user-info {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--sidebar-border);
+            margin-top: auto;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--sidebar-accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--sidebar-accent-foreground);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .user-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-role {
+            font-size: 0.8rem;
+            color: var(--muted-foreground);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+        }
+
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .main-header h1 {
+            font-family: 'Work Sans', sans-serif;
+            font-weight: 700;
+            font-size: 2rem;
+            color: var(--primary);
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: var(--accent-foreground);
+        }
+
+        .btn-primary:hover {
+            background: #7c3aed;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: var(--secondary-foreground);
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        /* Profile Content */
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .profile-card {
+            background: var(--card);
+            padding: 2rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            height: fit-content;
+        }
+
+        .profile-avatar-section {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .profile-avatar-large {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-foreground);
+            font-size: 3rem;
+            font-weight: 700;
+            margin: 0 auto 1rem;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .profile-name {
+            font-family: 'Work Sans', sans-serif;
+            font-weight: 600;
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-position {
+            color: var(--muted-foreground);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .profile-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .profile-status.active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .profile-info-section {
+            margin-top: 2rem;
+        }
+
+        .info-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: var(--muted-foreground);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-value {
+            color: var(--foreground);
+            font-size: 1rem;
+        }
+
+        /* Details Section */
+        .details-section {
+            background: var(--card);
+            padding: 2rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-family: 'Work Sans', sans-serif;
+            font-weight: 600;
+            font-size: 1.25rem;
+            color: var(--primary);
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* Activity Timeline */
+        .activity-section {
+            background: var(--card);
+            padding: 2rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            margin-top: 2rem;
+        }
+
+        .activity-timeline {
+            position: relative;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .activity-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-foreground);
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .activity-time {
+            font-size: 0.8rem;
+            color: var(--muted-foreground);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--background);
+            padding: 2rem;
+            border-radius: var(--radius);
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-family: 'Work Sans', sans-serif;
+            font-weight: 600;
+            font-size: 1.25rem;
+            color: var(--primary);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--muted-foreground);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--foreground);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--input);
+            color: var(--foreground);
+            font-size: 1rem;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: end;
+        }
+
+        /* Image Upload Styles */
+        .image-upload-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .image-preview {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background-color: var(--muted);
+            background-size: cover;
+            background-position: center;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border: 2px dashed var(--border);
+        }
+
+        .image-preview:hover::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+        }
+
+        .image-preview.has-image:hover::after {
+            content: '\f030';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+        }
+
+        .image-preview-placeholder {
+            color: var(--muted-foreground);
+            text-align: center;
+        }
+
+        .image-preview-placeholder i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .image-upload-input {
+            display: none;
+        }
+
+        .image-upload-btn {
+            padding: 0.5rem 1rem;
+            background: var(--secondary);
+            color: var(--secondary-foreground);
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .image-upload-btn:hover {
+            background: #4b5563;
+        }
+
+        .image-remove-btn {
+            margin-top: 0.5rem;
+            padding: 0.25rem 0.5rem;
+            background: none;
+            color: var(--destructive);
+            border: none;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .image-remove-btn:hover {
+            text-decoration: underline;
+        }
+
+        /* Mobile Responsive */
+        .mobile-menu-btn {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1000;
+            background: var(--accent);
+            color: var(--accent-foreground);
+            border: none;
+            padding: 0.75rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 999;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+                padding-top: 4rem;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Mobile Menu Button -->
+        <button class="mobile-menu-btn" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div th:replace="~{/layout/slidesbarMusican}"></div>
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="main-header">
+                <h1>Hồ sơ nhân viên</h1>
+                <button class="btn btn-primary" onclick="openEditModal()">
+                    <i class="fas fa-edit"></i>
+                    Chỉnh sửa
+                </button>
+            </div>
+
+            <!-- Profile Grid -->
+            <div class="profile-grid">
+                <!-- Profile Card -->
+                <div class="profile-card">
+                    <div class="profile-avatar-section">
+                        <div class="profile-avatar-large" id="profileAvatar">NV</div>
+                        <h2 class="profile-name" id="profileName">Nguyễn Văn A</h2>
+                        <p class="profile-position" id="profilePosition">Nhân viên IT</p>
+                        <span class="profile-status active">
+                            <i class="fas fa-circle"></i>
+                            Đang hoạt động
+                        </span>
+                    </div>
+
+                    <div class="profile-info-section">
+                        <div class="info-group">
+                            <div class="info-label">Email</div>
+                            <div class="info-value" id="profileEmail">nguyenvana@company.com</div>
+                        </div>
+                        <div class="info-group">
+                            <div class="info-label">Số điện thoại</div>
+                            <div class="info-value" id="profilePhone">0123 456 789</div>
+                        </div>
+                        <div class="info-group">
+                            <div class="info-label">Phòng ban</div>
+                            <div class="info-value" id="profileDepartment">Công nghệ thông tin</div>
+                        </div>
+                        <div class="info-group">
+                            <div class="info-label">Ngày vào làm</div>
+                            <div class="info-value" id="profileStartDate">15/03/2023</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Details Section -->
+                <div class="details-section">
+                    <div class="section-header">
+                        <h3 class="section-title">Thông tin chi tiết</h3>
+                    </div>
+                    <div class="details-grid">
+                        <div class="info-group">
+                            <div class="info-label">Mã nhân viên</div>
+                            <div class="info-value" id="employeeId">EMP001</div>
+                        </div>
+                        <div class="info-group">
+                            <div class="info-label">Chức vụ</div>
+                            <div class="info-value" id="employeePosition">Developer</div>
+                        </div>
+                        <div class="info-group">
+                            <div class="info-label">Cấp độ</div>
+                            <div class="info-value" id="employeeLevel">Junior</div>
+                        </div>
+                        <div class="info-group">
+                            <div class="info-label">Quản lý trực tiếp</div>
+                            <div class="info-value" id="employeeManager">Trần Thị B</div>
+                        </div>
+                        <div class="info-group">
+                            <div class="info-label">Địa chỉ</div>
+                            <div class="info-value" id="employeeAddress">123 Đường ABC, Quận 1, TP.HCM</div>
+                        </div>
+                        <div class="info-group">
+                            <div class="info-label">Ngày sinh</div>
+                            <div class="info-value" id="employeeBirthday">01/01/1990</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Timeline -->
+            <div class="activity-section">
+                <div class="section-header">
+                    <h3 class="section-title">Lịch sử hoạt động</h3>
+                </div>
+                <div class="activity-timeline">
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-user-edit"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Cập nhật thông tin hồ sơ</div>
+                            <div class="activity-time">2 giờ trước</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Chấm công vào làm</div>
+                            <div class="activity-time">8:30 AM hôm nay</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-tasks"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Hoàn thành dự án ABC</div>
+                            <div class="activity-time">1 ngày trước</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-calendar"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Tham gia cuộc họp team</div>
+                            <div class="activity-time">2 ngày trước</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Chỉnh sửa hồ sơ nhân viên</h3>
+                <button class="close-btn" onclick="closeEditModal()">&times;</button>
+            </div>
+            <form class="modal-form" onsubmit="saveProfile(event)">
+                <!-- Image Upload Section -->
+                <div class="image-upload-container">
+                    <div class="image-preview" id="imagePreview" onclick="document.getElementById('imageUpload').click()">
+                        <div class="image-preview-placeholder" id="imagePlaceholder">
+                            <i class="fas fa-camera"></i>
+                            <div>Chọn ảnh</div>
+                        </div>
+                    </div>
+                    <input type="file" id="imageUpload" class="image-upload-input" accept="image/*" onchange="previewImage(event)">
+                    <button type="button" class="image-upload-btn" onclick="document.getElementById('imageUpload').click()">
+                        <i class="fas fa-upload"></i> Chọn ảnh
+                    </button>
+                    <button type="button" class="image-remove-btn" id="removeImageBtn" onclick="removeImage()" style="display: none;">
+                        <i class="fas fa-times"></i> Xóa ảnh
+                    </button>
+                </div>
+
+                <div class="form-group">
+                    <label for="editName">Họ và tên *</label>
+                    <input type="text" id="editName" required>
+                </div>
+                <div class="form-group">
+                    <label for="editEmail">Email *</label>
+                    <input type="email" id="editEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="editPhone">Số điện thoại</label>
+                    <input type="tel" id="editPhone">
+                </div>
+                <div class="form-group">
+                    <label for="editPosition">Chức vụ</label>
+                    <input type="text" id="editPosition">
+                </div>
+                <div class="form-group">
+                    <label for="editDepartment">Phòng ban</label>
+                    <select id="editDepartment">
+                        <option value="IT">Công nghệ thông tin</option>
+                        <option value="HR">Nhân sự</option>
+                        <option value="Finance">Tài chính</option>
+                        <option value="Marketing">Marketing</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editAddress">Địa chỉ</label>
+                    <textarea id="editAddress"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Hủy</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        Lưu thay đổi
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Sample employee data
+        let currentEmployee = {
+            id: 'EMP001',
+            name: 'Nguyễn Văn A',
+            email: 'nguyenvana@company.com',
+            phone: '0123 456 789',
+            position: 'Developer',
+            department: 'IT',
+            level: 'Junior',
+            manager: 'Trần Thị B',
+            address: '123 Đường ABC, Quận 1, TP.HCM',
+            birthday: '01/01/1990',
+            startDate: '15/03/2023',
+            status: 'active',
+            avatar: null
+        };
+
+        // Initialize page
+        function init() {
+            loadEmployeeProfile();
+        }
+
+        // Load employee profile data
+        function loadEmployeeProfile() {
+            // Get employee ID from URL params or use default
+            const urlParams = new URLSearchParams(window.location.search);
+            const employeeId = urlParams.get('id') || 'EMP001';
+
+            // Load from localStorage or use sample data
+            const employees = JSON.parse(localStorage.getItem('employees') || '[]');
+            const employee = employees.find(emp => emp.id === employeeId) || currentEmployee;
+
+            // Update profile display
+            document.getElementById('profileName').textContent = employee.name;
+            document.getElementById('profilePosition').textContent = employee.position;
+            document.getElementById('profileEmail').textContent = employee.email;
+            document.getElementById('profilePhone').textContent = employee.phone;
+            document.getElementById('profileDepartment').textContent = getDepartmentName(employee.department);
+            document.getElementById('profileStartDate').textContent = employee.startDate;
+            document.getElementById('employeeId').textContent = employee.id;
+            document.getElementById('employeePosition').textContent = employee.position;
+            document.getElementById('employeeLevel').textContent = employee.level || 'Junior';
+            document.getElementById('employeeManager').textContent = employee.manager || 'Chưa có';
+            document.getElementById('employeeAddress').textContent = employee.address;
+            document.getElementById('employeeBirthday').textContent = employee.birthday || 'Chưa cập nhật';
+
+            // Update avatar
+            const avatar = document.getElementById('profileAvatar');
+            if (employee.avatar) {
+                avatar.style.backgroundImage = `url(${employee.avatar})`;
+                avatar.textContent = '';
+            } else {
+                avatar.style.backgroundImage = '';
+                avatar.textContent = employee.name.split(' ').map(n => n[0]).join('').toUpperCase();
+            }
+
+            currentEmployee = employee;
+        }
+
+        // Get department full name
+        function getDepartmentName(dept) {
+            const departments = {
+                'IT': 'Công nghệ thông tin',
+                'HR': 'Nhân sự',
+                'Finance': 'Tài chính',
+                'Marketing': 'Marketing'
+            };
+            return departments[dept] || dept;
+        }
+
+        // Modal functions
+        function openEditModal() {
+            document.getElementById('editName').value = currentEmployee.name;
+            document.getElementById('editEmail').value = currentEmployee.email;
+            document.getElementById('editPhone').value = currentEmployee.phone;
+            document.getElementById('editPosition').value = currentEmployee.position;
+            document.getElementById('editDepartment').value = currentEmployee.department;
+            document.getElementById('editAddress').value = currentEmployee.address;
+            
+            // Set up image preview
+            const imagePreview = document.getElementById('imagePreview');
+            const imagePlaceholder = document.getElementById('imagePlaceholder');
+            const removeImageBtn = document.getElementById('removeImageBtn');
+            
+            if (currentEmployee.avatar) {
+                imagePreview.style.backgroundImage = `url(${currentEmployee.avatar})`;
+                imagePreview.classList.add('has-image');
+                imagePlaceholder.style.display = 'none';
+                removeImageBtn.style.display = 'block';
+            } else {
+                imagePreview.style.backgroundImage = '';
+                imagePreview.classList.remove('has-image');
+                imagePlaceholder.style.display = 'flex';
+                removeImageBtn.style.display = 'none';
+            }
+            
+            document.getElementById('editModal').classList.add('show');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.remove('show');
+        }
+
+        // Image preview function
+        function previewImage(event) {
+            const input = event.target;
+            const imagePreview = document.getElementById('imagePreview');
+            const imagePlaceholder = document.getElementById('imagePlaceholder');
+            const removeImageBtn = document.getElementById('removeImageBtn');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    imagePreview.style.backgroundImage = `url(${e.target.result})`;
+                    imagePreview.classList.add('has-image');
+                    imagePlaceholder.style.display = 'none';
+                    removeImageBtn.style.display = 'block';
+                }
+                
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Remove image function
+        function removeImage() {
+            const imagePreview = document.getElementById('imagePreview');
+            const imagePlaceholder = document.getElementById('imagePlaceholder');
+            const removeImageBtn = document.getElementById('removeImageBtn');
+            const imageUpload = document.getElementById('imageUpload');
+            
+            imagePreview.style.backgroundImage = '';
+            imagePreview.classList.remove('has-image');
+            imagePlaceholder.style.display = 'flex';
+            removeImageBtn.style.display = 'none';
+            imageUpload.value = '';
+            
+            // Mark for deletion
+            currentEmployee.avatar = null;
+        }
+
+        function saveProfile(event) {
+            event.preventDefault();
+
+            // Update employee data
+            currentEmployee.name = document.getElementById('editName').value;
+            currentEmployee.email = document.getElementById('editEmail').value;
+            currentEmployee.phone = document.getElementById('editPhone').value;
+            currentEmployee.position = document.getElementById('editPosition').value;
+            currentEmployee.department = document.getElementById('editDepartment').value;
+            currentEmployee.address = document.getElementById('editAddress').value;
+            
+            // Handle image upload if a new file was selected
+            const imageUpload = document.getElementById('imageUpload');
+            if (imageUpload.files && imageUpload.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    currentEmployee.avatar = e.target.result;
+                    
+                    // Save to localStorage
+                    const employees = JSON.parse(localStorage.getItem('employees') || '[]');
+                    const index = employees.findIndex(emp => emp.id === currentEmployee.id);
+                    if (index !== -1) {
+                        employees[index] = currentEmployee;
+                    } else {
+                        employees.push(currentEmployee);
+                    }
+                    localStorage.setItem('employees', JSON.stringify(employees));
+                    
+                    // Refresh display
+                    loadEmployeeProfile();
+                    closeEditModal();
+                    alert('Cập nhật hồ sơ thành công!');
+                }
+                reader.readAsDataURL(imageUpload.files[0]);
+            } else {
+                // Save to localStorage
+                const employees = JSON.parse(localStorage.getItem('employees') || '[]');
+                const index = employees.findIndex(emp => emp.id === currentEmployee.id);
+                if (index !== -1) {
+                    employees[index] = currentEmployee;
+                } else {
+                    employees.push(currentEmployee);
+                }
+                localStorage.setItem('employees', JSON.stringify(employees));
+                
+                // Refresh display
+                loadEmployeeProfile();
+                closeEditModal();
+                alert('Cập nhật hồ sơ thành công!');
+            }
+        }
+
+        // Sidebar functions
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        }
+
+        function logout() {
+            if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('editModal').addEventListener('click', function (e) {
+            if (e.target === this) {
+                closeEditModal();
+            }
+        });
+
+        // Initialize when page loads
+        window.addEventListener('load', init);
+    </script>
+</body>
+
+</html>
