@@ -90,7 +90,7 @@ public class SecurityConfig {
             return org.springframework.security.core.userdetails.User
                     .withUsername(account.getUsername())
                     .password(account.getPassword())
-                    .authorities(account.getRole().name()) // Không thêm "ROLE_" nữa
+                    .authorities(account.getRole().name())
                     .build();
         };
     }

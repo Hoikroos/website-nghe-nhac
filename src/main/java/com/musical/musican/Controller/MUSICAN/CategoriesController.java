@@ -19,27 +19,21 @@ public class CategoriesController {
     @Autowired
     private CategoryService categoryService;
 
-    // List all categories
     @GetMapping
     public String listCategories(Model model) {
         model.addAttribute("categories", categoryService.getAllCategories());
         model.addAttribute("showModal", false);
+        model.addAttribute("category", new Category());
         return "Musican/categories";
     }
-
-    // Show add category form in modal
     @GetMapping("/add")
     public String showAddCategoryForm(Model model) {
-        if (!model.containsAttribute("category")) {
-            model.addAttribute("category", new Category());
-        }
+        model.addAttribute("category", new Category());
         model.addAttribute("isEdit", false);
         model.addAttribute("showModal", true);
         model.addAttribute("categories", categoryService.getAllCategories());
         return "Musican/categories";
     }
-
-    // Handle add category form submission
     @PostMapping("/add")
     public String addCategory(@Valid @ModelAttribute("category") Category category,
             BindingResult result,
@@ -55,7 +49,7 @@ public class CategoriesController {
             categoryService.addCategory(category);
             redirectAttributes.addFlashAttribute("message", "Thêm thể loại thành công!");
         } catch (IllegalArgumentException e) {
-            model.addAttribute("error", e.getMessage());
+            model.addAttribute("errorMessage", e.getMessage());
             model.addAttribute("isEdit", false);
             model.addAttribute("showModal", true);
             model.addAttribute("categories", categoryService.getAllCategories());
@@ -63,8 +57,6 @@ public class CategoriesController {
         }
         return "redirect:/musican/categories";
     }
-
-    // Show edit category form in modal
     @GetMapping("/edit/{id}")
     public String showEditCategoryForm(@PathVariable("id") Integer id, Model model) {
         Optional<Category> category = categoryService.getCategoryById(id);
@@ -72,6 +64,7 @@ public class CategoriesController {
             model.addAttribute("errorMessage", "Thể loại không tồn tại!");
             model.addAttribute("categories", categoryService.getAllCategories());
             model.addAttribute("showModal", false);
+            model.addAttribute("category", new Category());
             return "Musican/categories";
         }
         model.addAttribute("category", category.get());
@@ -80,8 +73,6 @@ public class CategoriesController {
         model.addAttribute("categories", categoryService.getAllCategories());
         return "Musican/categories";
     }
-
-    // Handle edit category form submission
     @PostMapping("/edit/{id}")
     public String updateCategory(@PathVariable("id") Integer id,
             @Valid @ModelAttribute("category") Category category,
@@ -95,6 +86,7 @@ public class CategoriesController {
             return "Musican/categories";
         }
         try {
+            category.setId(id);
             categoryService.updateCategory(id, category);
             redirectAttributes.addFlashAttribute("message", "Cập nhật thể loại thành công!");
         } catch (IllegalArgumentException e) {
@@ -106,8 +98,6 @@ public class CategoriesController {
         }
         return "redirect:/musican/categories";
     }
-
-    // Handle delete category
     @PostMapping("/delete/{id}")
     public String deleteCategory(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
         try {

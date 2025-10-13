@@ -532,8 +532,6 @@
             </div>
         </main>
     </div>
-
-    <!-- Add/Edit Category Modal -->
     <div class="modal" id="categoryModal" th:classappend="${showModal} ? 'show' : ''">
         <div class="modal-content">
             <div class="modal-header">
@@ -570,7 +568,6 @@
         }
 
         document.addEventListener('DOMContentLoaded', function () {
-            // Handle delete button clicks
             document.querySelectorAll('.delete-btn').forEach(button => {
                 button.addEventListener('click', function (e) {
                     e.preventDefault();
@@ -599,8 +596,6 @@
                     setTimeout(() => alert.remove(), 300);
                 });
             });
-
-            // Tự động ẩn thông báo sau 5 giây
             document.querySelectorAll('.alert').forEach(alert => {
                 setTimeout(() => {
                     alert.classList.add('fade-out');

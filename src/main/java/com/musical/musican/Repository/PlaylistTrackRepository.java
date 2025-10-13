@@ -11,4 +11,5 @@ import com.musical.musican.Model.Entity.PlaylistTrackId;
 @Repository
 public interface PlaylistTrackRepository extends JpaRepository<PlaylistTrack, PlaylistTrackId> {
     List<PlaylistTrack> findByPlaylistId(Integer playlistId);
+    void deleteByPlaylistId(Integer playlistId);
 }
