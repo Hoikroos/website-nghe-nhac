@@ -64,9 +64,10 @@ public class PlayListServiceImpl implements PlayListService {
         if (playlist.getAccount() == null) {
             throw new IllegalArgumentException("Thông tin tài khoản không hợp lệ!");
         }
-        if (!playlist.getAccount().getRole().name().equals("MUSICIAN")) {
-            throw new IllegalArgumentException("Chỉ tài khoản MUSICIAN mới có thể tạo playlist!");
+        if (!"MUSICIAN".equalsIgnoreCase(playlist.getAccount().getRole().toString())) {
+            throw new IllegalArgumentException("Chỉ tài khoản MUSICIAN mới có thể thực hiện hành động này!");
         }
+
         if (playlistRepository.existsByTitleAndAccount(playlist.getTitle().trim(), playlist.getAccount())) {
             throw new IllegalArgumentException("Playlist với tên này đã tồn tại!");
         }

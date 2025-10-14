@@ -630,7 +630,7 @@
                         </div>
                         <div class="playlist-actions">
                             <a th:href="@{/musican/playlists/edit/{id}(id=${playlist.id})}"
-                                class="btn btn-sm btn-secondary" onclick="openModal(); return false;">
+                                class="btn btn-sm btn-secondary">
                                 <i class="fas fa-edit"></i>
                             </a>
                             <a th:href="@{/musican/playlists/tracks/{id}(id=${playlist.id})}"
@@ -648,9 +648,9 @@
                     <h3 class="playlist-title" th:text="${playlist.title} ?: 'Chưa có tiêu đề'"></h3>
                     <p class="playlist-description" th:text="${playlist.description} ?: 'Chưa có mô tả'"></p>
                     <div class="playlist-meta">
-                        <span class="privacy-badge" th:classappend="${playlist.privacy == 1} ? 'public' : 'private'"
-                            th:text="${playlist.privacy == 1} ? 'Công khai' : 'Riêng tư'"></span>
-                        <span th:text="${#lists.size(playlist.tracks)} + ' bài hát'"></span>
+                        <span class="privacy-badge" th:classappend="${playlist.isPublic} ? 'public' : 'private'"
+                            th:text="${playlist.isPublic} ? 'Công khai' : 'Riêng tư'"></span>
+                        <span th:text="${#lists.size(playlist.playlistTracks)} + ' bài hát'"></span>
                     </div>
                 </div>
             </div>
@@ -665,34 +665,39 @@
                 <button class="close-btn"
                     onclick="document.getElementById('playlistModal').classList.remove('show')">&times;</button>
             </div>
+
             <form
                 th:action="${isEdit} ? @{/musican/playlists/edit/{id}(id=${playlist?.id})} : @{/musican/playlists/add}"
                 method="post">
+
                 <div class="form-group">
                     <label for="playlistTitle">Tên playlist *</label>
                     <input type="text" id="playlistTitle" name="title" th:value="${playlist?.title}" required>
                 </div>
+
                 <div class="form-group">
                     <label for="playlistDescription">Mô tả</label>
                     <textarea id="playlistDescription" name="description" th:text="${playlist?.description}"></textarea>
                 </div>
+
                 <div class="form-group">
                     <label for="playlistPrivacy">Quyền riêng tư</label>
-                    <select id="playlistPrivacy" name="privacy">
-                        <option value="1" th:selected="${playlist?.isPublic == 1}">Công khai</option>
-                        <option value="0" th:selected="${playlist?.isPublic == 0}">Riêng tư</option>
+                    <select id="playlistPrivacy" name="isPublic">
+                        <option value="true" th:selected="${playlist?.isPublic == true}">Công khai</option>
+                        <option value="false" th:selected="${playlist?.isPublic == false}">Riêng tư</option>
                     </select>
                 </div>
+
                 <div class="modal-actions">
                     <a th:href="@{/musican/playlists}" class="btn btn-secondary">Hủy</a>
                     <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save"></i>
-                        Lưu
+                        <i class="fas fa-save"></i> Lưu
                     </button>
                 </div>
             </form>
         </div>
     </div>
+
 
     <!-- Tracks Management Modal -->
     <div class="modal" id="tracksModal" th:classappend="${showTracksModal} ? 'show' : ''">

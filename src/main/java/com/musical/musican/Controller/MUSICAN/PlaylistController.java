@@ -34,10 +34,10 @@ public class PlaylistController {
 
     private Account getCurrentAccount() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated() && 
-            authentication.getPrincipal() instanceof org.springframework.security.core.userdetails.User) {
-            org.springframework.security.core.userdetails.User user = 
-                (org.springframework.security.core.userdetails.User) authentication.getPrincipal();
+        if (authentication != null && authentication.isAuthenticated() &&
+                authentication.getPrincipal() instanceof org.springframework.security.core.userdetails.User) {
+            org.springframework.security.core.userdetails.User user = (org.springframework.security.core.userdetails.User) authentication
+                    .getPrincipal();
             Account account = accountRepository.findByUsername(user.getUsername())
                     .orElseThrow(() -> new IllegalStateException("Tài khoản không tồn tại"));
             if (!account.getRole().name().equals("MUSICIAN")) {
@@ -62,8 +62,8 @@ public class PlaylistController {
             model.addAttribute("showTracksModal", false);
             model.addAttribute("playlist", new Playlist());
             model.addAttribute("tracks", trackService.getAllTracks());
-            model.addAttribute("currentUser", currentAccount.getFullname() != null ? 
-                currentAccount.getFullname() : currentAccount.getEmail());
+            model.addAttribute("currentUser",
+                    currentAccount.getFullname() != null ? currentAccount.getFullname() : currentAccount.getEmail());
         } catch (IllegalStateException e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "redirect:/Dangnhap";
@@ -74,7 +74,6 @@ public class PlaylistController {
     @GetMapping("/add")
     public String showAddPlaylistForm(Model model) {
         Playlist playlist = Playlist.builder()
-                .isPublic(true)
                 .createdAt(java.time.LocalDateTime.now())
                 .build();
         model.addAttribute("playlist", playlist);
@@ -162,7 +161,8 @@ public class PlaylistController {
         try {
             Account currentAccount = getCurrentAccount();
             Optional<Playlist> existingPlaylist = playlistService.getPlaylistById(id);
-            if (!existingPlaylist.isPresent() || !existingPlaylist.get().getAccount().getId().equals(currentAccount.getId())) {
+            if (!existingPlaylist.isPresent()
+                    || !existingPlaylist.get().getAccount().getId().equals(currentAccount.getId())) {
                 model.addAttribute("errorMessage", "Playlist không tồn tại hoặc bạn không có quyền chỉnh sửa!");
                 model.addAttribute("isEdit", true);
                 model.addAttribute("showModal", true);
@@ -256,8 +256,8 @@ public class PlaylistController {
             Account currentAccount = getCurrentAccount();
             Optional<Playlist> playlistOpt = playlistService.getPlaylistById(id);
             if (!playlistOpt.isPresent() || !playlistOpt.get().getAccount().getId().equals(currentAccount.getId())) {
-                redirectAttributes.addFlashAttribute("errorMessage", 
-                    "Playlist không tồn tại hoặc bạn không có quyền xóa!");
+                redirectAttributes.addFlashAttribute("errorMessage",
+                        "Playlist không tồn tại hoặc bạn không có quyền xóa!");
                 return "redirect:/musican/playlists";
             }
             playlistService.deletePlaylist(id);

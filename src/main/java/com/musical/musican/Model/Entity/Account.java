@@ -33,7 +33,7 @@ public class Account {
     private String avatar;
 
     @Column(name = "active")
-    private Boolean active;
+    private Boolean active = true; // ✅ nên mặc định là true để tránh null
 
     @Column(name = "otp", length = 6)
     private String otp;
@@ -48,16 +48,20 @@ public class Account {
     @Column(length = 20, nullable = false)
     private Role role = Role.USER;
 
-    @Column(name = "created_at")
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    // ✅ tránh lỗi stack overflow khi dùng Lombok toString()
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
     private List<Artist> artists;
 
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
     private List<Playlist> playlists;
 
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
     private List<Favourite> favourites;
 
     public enum Role {
