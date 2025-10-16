@@ -5,6 +5,7 @@ import java.util.Optional;
 import com.musical.musican.Model.Entity.Category;
 
 public interface CategoryService {
+    List<Category> findAll();
 
     List<Category> getAllCategories();
 
