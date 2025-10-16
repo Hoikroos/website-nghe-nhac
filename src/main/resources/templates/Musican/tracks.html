@@ -569,30 +569,34 @@
             <div class="main-header">
                 <h1>Quản lý bài hát</h1>
                 <div class="header-actions">
-                    <button class="btn btn-primary" onclick="openModal()">
+                    <button class="btn btn-primary" onclick="openCreateModal()">
                         <i class="fas fa-plus"></i>
                         Thêm bài hát
                     </button>
                 </div>
             </div>
             <div class="search-section">
-                <form class="search-form" onsubmit="searchTracks(event)">
+                <form class="search-form" method="get" th:action="@{/musican/tracks}">
                     <div class="form-group">
                         <label for="searchTitle">Tên bài hát</label>
-                        <input type="text" id="searchTitle" placeholder="Nhập tên bài hát...">
+                        <input type="text" id="searchTitle" name="title" th:value="${title}"
+                            placeholder="Nhập tên bài hát...">
                     </div>
                     <div class="form-group">
                         <label for="searchAlbum">Album</label>
-                        <select id="searchAlbum">
+                        <select id="searchAlbum" name="albumId">
                             <option value="">Tất cả album</option>
+                            <option th:each="album : ${albums}" th:value="${album.id}" th:text="${album.title}"
+                                th:selected="${albumId} == ${album.id}">
+                            </option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="searchSource">Nguồn</label>
-                        <select id="searchSource">
+                        <select id="searchSource" name="sourceType">
                             <option value="">Tất cả nguồn</option>
-                            <option value="UPLOAD">Upload</option>
-                            <option value="EXTERNAL">External</option>
+                            <option value="UPLOAD" th:selected="${sourceType} == 'UPLOAD'">Upload</option>
+                            <option value="EXTERNAL" th:selected="${sourceType} == 'EXTERNAL'">External</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -614,7 +618,7 @@
             <div class="tracks-section">
                 <div class="section-header">
                     <h2 class="section-title">Danh sách bài hát</h2>
-                    <span id="trackCount">0 bài hát</span>
+                    <span id="trackCount" th:text="${#lists.size(tracks)} + ' bài hát'">0 bài hát</span>
                 </div>
                 <table class="tracks-table">
                     <thead>
@@ -626,48 +630,71 @@
                             <th>Thao tác</th>
                         </tr>
                     </thead>
-                    <tbody id="tracksTableBody">
-                        <!-- Tracks will be loaded here -->
+                    <tbody>
+                        <tr th:each="track : ${tracks}">
+                            <td th:text="${track.title}"></td>
+                            <td th:text="${track.album != null ? track.album.title : 'Không có'}"></td>
+                            <td th:text="${track.duration}"></td>
+                            <td th:text="${track.sourceType}"></td>
+                            <td>
+                                <button type="button" class="btn btn-primary"
+                                    th:attr="onclick=|openEditModal('${track.id}', '${track.title}', '${track.album != null ? track.album.id : ''}', '${track.duration}', '${track.sourceType}', '${track.audioUrl}')|">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+
+                                <form th:action="@{'/musican/tracks/delete/' + ${track.id}}" method="post"
+                                    style="display:inline;" class="delete-form">
+                                    <button type="submit" class="btn btn-danger delete-btn">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </main>
     </div>
-
-    <!-- Add/Edit Track Modal -->
     <div class="modal" id="trackModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title" id="modalTitle">Thêm bài hát mới</h3>
+                <h3 class="modal-title" id="modalTitle">Thêm bài hát</h3>
                 <button class="close-btn" onclick="closeModal()">&times;</button>
             </div>
-            <form class="modal-form" onsubmit="saveTrack(event)">
+            <form class="modal-form" id="trackForm" method="post" enctype="multipart/form-data">
+                <input type="hidden" id="trackId" name="id">
                 <div class="form-group">
                     <label for="trackTitle">Tên bài hát *</label>
-                    <input type="text" id="trackTitle" required>
+                    <input type="text" id="trackTitle" name="title" required>
                 </div>
                 <div class="form-group">
                     <label for="trackAlbum">Album</label>
-                    <select id="trackAlbum">
+                    <select id="trackAlbum" name="album.id">
                         <option value="">Chọn album (tùy chọn)</option>
+                        <option th:each="album : ${albums}" th:value="${album.id}" th:text="${album.title}"></option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label for="trackDuration">Thời lượng (giây)</label>
-                    <input type="number" id="trackDuration" min="1" placeholder="180">
+                    <input type="number" id="trackDuration" name="duration" min="1" placeholder="180">
                 </div>
                 <div class="form-group">
-                    <label for="trackSource">Nguồn *</label>
-                    <select id="trackSource" required onchange="toggleAudioUrl()">
-                        <option value="">Chọn nguồn</option>
-                        <option value="UPLOAD">Upload file</option>
+                    <label for="sourceType">Nguồn nhạc</label>
+                    <select id="sourceType" name="sourceType" onchange="toggleSourceInput()">
+                        <option value="UPLOAD">Tải từ máy</option>
                         <option value="EXTERNAL">Link ngoài</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label for="trackAudioUrl">URL âm thanh *</label>
-                    <input type="url" id="trackAudioUrl" required placeholder="https://example.com/song.mp3">
+
+                <div class="form-group" id="uploadGroup">
+                    <label for="fileUpload">Chọn file nhạc</label>
+                    <input type="file" id="fileUpload" name="fileUpload" accept="audio/*">
                 </div>
+                <div class="form-group" id="externalGroup" style="display: none;">
+                    <label for="externalLink">Dán link nhạc</label>
+                    <input type="text" id="externalLink" name="externalLink" placeholder="https://example.com/link.mp3">
+                </div>
+
                 <div class="modal-actions">
                     <button type="button" class="btn btn-secondary" onclick="closeModal()">Hủy</button>
                     <button type="submit" class="btn btn-primary">
@@ -678,15 +705,49 @@
             </form>
         </div>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        function openModal() {
+        let currentAction = 'create';
+        function openCreateModal() {
+            currentAction = 'create';
+            document.getElementById('modalTitle').innerText = 'Thêm bài hát mới';
+            document.getElementById('trackForm').action = '/musican/tracks/create';
+            clearForm();
+            toggleSourceInput();
             document.getElementById('trackModal').classList.add('show');
         }
+        function openEditModal(id, title, albumId, duration, sourceType, audioUrl) {
+            currentAction = 'edit';
+            document.getElementById('modalTitle').innerText = 'Sửa bài hát';
+            document.getElementById('trackForm').action = '/musican/tracks/edit/' + id;
+
+            document.getElementById('trackId').value = id;
+            document.getElementById('trackTitle').value = title;
+            document.getElementById('trackAlbum').value = albumId;
+            document.getElementById('trackDuration').value = duration;
+            document.getElementById('sourceType').value = sourceType;
+            toggleSourceInput();
+            if (sourceType === 'EXTERNAL') {
+                document.getElementById('externalLink').value = audioUrl;
+            }
+
+            document.getElementById('trackModal').classList.add('show');
+        }
+
         function closeModal() {
             document.getElementById('trackModal').classList.remove('show');
         }
 
+        function clearForm() {
+            document.getElementById('trackId').value = '';
+            document.getElementById('trackTitle').value = '';
+            document.getElementById('trackAlbum').value = '';
+            document.getElementById('trackDuration').value = '';
+            document.getElementById('sourceType').value = 'UPLOAD';
+            document.getElementById('fileUpload').value = '';
+            document.getElementById('externalLink').value = '';
+        }
         document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll('.delete-btn').forEach(button => {
                 button.addEventListener('click', function (e) {
@@ -708,15 +769,6 @@
                     });
                 });
             });
-            document.querySelectorAll('.close-btn').forEach(button => {
-                button.addEventListener('click', function () {
-                    const alert = this.closest('.alert');
-                    if (alert) {
-                        alert.classList.add('fade-out');
-                        setTimeout(() => alert.remove(), 300);
-                    }
-                });
-            });
             document.querySelectorAll('.alert').forEach(alert => {
                 setTimeout(() => {
                     alert.classList.add('fade-out');
@@ -724,6 +776,21 @@
                 }, 2000);
             });
         });
+        function toggleSourceInput() {
+            const type = document.getElementById('sourceType').value;
+            const uploadGroup = document.getElementById('uploadGroup');
+            const externalGroup = document.getElementById('externalGroup');
+
+            if (type === 'UPLOAD') {
+                uploadGroup.style.display = 'block';
+                externalGroup.style.display = 'none';
+                document.getElementById('externalLink').value = '';
+            } else {
+                uploadGroup.style.display = 'none';
+                externalGroup.style.display = 'block';
+                document.getElementById('fileUpload').value = '';
+            }
+        }
     </script>
 </body>
 
