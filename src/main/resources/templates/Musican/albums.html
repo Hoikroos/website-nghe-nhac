@@ -9,6 +9,7 @@
         href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600;700&family=Open+Sans:wght@400;500;600&display=swap"
         rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
     <style>
         :root {
             --background: #ffffff;
@@ -56,7 +57,6 @@
             min-height: 100vh;
         }
 
-        /* Sidebar styles */
         .sidebar {
             width: 280px;
             background: var(--sidebar);
@@ -157,7 +157,6 @@
             color: var(--muted-foreground);
         }
 
-        /* Main content */
         .main-content {
             flex: 1;
             margin-left: 280px;
@@ -166,7 +165,7 @@
 
         .main-header {
             display: flex;
-            justify-content: between;
+            justify-content: space-between;
             align-items: center;
             margin-bottom: 2rem;
             padding-bottom: 1rem;
@@ -270,7 +269,7 @@
             margin-bottom: 0.5rem;
         }
 
-        .album-artist {
+        .album-album {
             color: var(--muted-foreground);
             margin-bottom: 0.75rem;
         }
@@ -429,383 +428,838 @@
                 flex-direction: column;
             }
         }
+
+        .alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1rem;
+            border-radius: var(--radius);
+            font-size: 0.95rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            width: 350px;
+            max-width: 90%;
+            z-index: 1000;
+            border-left: 4px solid;
+        }
+
+        .alert-success {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: #065f46;
+            border-color: #10b981;
+        }
+
+        .alert-error {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: #991b1b;
+            border-color: #ef4444;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            cursor: pointer;
+            color: inherit;
+            opacity: 0.7;
+            transition: all 0.3s ease;
+            padding: 0;
+            margin-left: 0.75rem;
+        }
+
+        .close-btn:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .alert.fade-out {
+            animation: fadeOut 0.3s ease forwards;
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+            to {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+
+        .albums-table-container {
+            background: var(--card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-header {
+            padding: 1.5rem 1.5rem 0;
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-family: 'Work Sans', sans-serif;
+            font-weight: 600;
+            font-size: 1.25rem;
+            color: var(--primary);
+        }
+
+        .albums-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .albums-table thead {
+            background-color: var(--muted);
+            border-bottom: 2px solid var(--border);
+        }
+
+        .albums-table th {
+            padding: 1rem 1.5rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--foreground);
+            font-family: 'Work Sans', sans-serif;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+
+        .albums-table tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: all 0.2s ease;
+        }
+
+        .albums-table tbody tr:hover {
+            background-color: rgba(139, 92, 246, 0.05);
+        }
+
+        .albums-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .albums-table td {
+            padding: 1rem 1.5rem;
+            vertical-align: middle;
+        }
+
+        .album-cover-cell {
+            width: 80px;
+        }
+
+        .album-cover-table {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--radius);
+            object-fit: cover;
+            border: 1px solid var(--border);
+        }
+
+        .album-title-cell {
+            font-weight: 500;
+            color: var(--primary);
+        }
+
+        .album-artist-cell {
+            color: var(--muted-foreground);
+        }
+
+        .album-date-cell {
+            color: var(--muted-foreground);
+            white-space: nowrap;
+        }
+
+        .album-actions-cell {
+            white-space: nowrap;
+        }
+
+        .album-actions-cell .btn {
+            margin-right: 0.5rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--muted-foreground);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-family: 'Work Sans', sans-serif;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Responsive table */
+        @media (max-width: 768px) {
+            .albums-table-container {
+                overflow-x: auto;
+            }
+
+            .albums-table {
+                min-width: 600px;
+            }
+
+            .album-actions-cell {
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .album-actions-cell .btn {
+                margin-right: 0;
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            padding: 1rem;
+        }
+
+        .modal.show {
+            display: flex;
+            opacity: 1;
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                backdrop-filter: blur(0px);
+            }
+
+            to {
+                opacity: 1;
+                backdrop-filter: blur(4px);
+            }
+        }
+
+        .modal-content {
+            background: var(--background);
+            border-radius: calc(var(--radius) + 4px);
+            width: 100%;
+            max-width: 520px;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border);
+            transform: translateY(20px);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal.show .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border);
+            background: var(--card);
+        }
+
+        .modal-title {
+            font-family: 'Work Sans', sans-serif;
+            font-weight: 700;
+            font-size: 1.375rem;
+            color: var(--primary);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .modal-title i {
+            color: var(--accent);
+            font-size: 1.25rem;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--muted-foreground);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: var(--muted);
+            color: var(--destructive);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 2rem;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .modal-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: var(--foreground);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-group label i {
+            color: var(--accent);
+            font-size: 0.8rem;
+        }
+
+        .required::after {
+            content: " *";
+            color: var(--destructive);
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--input);
+            color: var(--foreground);
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .form-group input:hover,
+        .form-group select:hover {
+            border-color: var(--accent);
+        }
+
+        .file-input-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .file-input-wrapper {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .file-input-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--accent);
+            color: var(--accent-foreground);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .file-input-label:hover {
+            background: #7c3aed;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        }
+
+        .file-name {
+            color: var(--muted-foreground);
+            font-size: 0.85rem;
+            font-style: italic;
+        }
+
+        .preview-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .preview-label {
+            font-weight: 600;
+            color: var(--foreground);
+            font-size: 0.9rem;
+        }
+
+        .preview-image {
+            width: 100%;
+            max-width: 200px;
+            height: 150px;
+            border-radius: var(--radius);
+            object-fit: cover;
+            border: 2px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .preview-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-footer {
+            padding: 1.5rem 2rem;
+            border-top: 1px solid var(--border);
+            background: var(--card);
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: var(--accent-foreground);
+            box-shadow: 0 2px 8px rgba(139, 92, 246, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: #7c3aed;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: var(--secondary-foreground);
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-1px);
+        }
+
+        /* Responsive modal */
+        @media (max-width: 640px) {
+            .modal {
+                padding: 0.5rem;
+            }
+
+            .modal-content {
+                max-height: 95vh;
+            }
+
+            .modal-header,
+            .modal-body,
+            .modal-footer {
+                padding: 1.25rem;
+            }
+
+            .modal-title {
+                font-size: 1.25rem;
+            }
+
+            .file-input-wrapper {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .modal-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .modal-actions .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Animation for file input */
+        @keyframes fileUpload {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .file-uploaded {
+            animation: fileUpload 0.5s ease;
+        }
     </style>
 </head>
 
 <body>
     <div class="dashboard-container">
-        <!-- Mobile Menu Button -->
         <button class="mobile-menu-btn" onclick="toggleSidebar()">
             <i class="fas fa-bars"></i>
         </button>
         <div th:replace="~{/layout/slidesbarMusican}"></div>
-        <!-- Main Content -->
         <main class="main-content">
             <div class="main-header">
                 <h1>Quản lý album</h1>
                 <div class="header-actions">
-                    <button class="btn btn-secondary" onclick="exportData()">
-                        <i class="fas fa-download"></i>
-                        Xuất dữ liệu
-                    </button>
-                    <button class="btn btn-primary" onclick="openAddModal()">
+                    <button class="btn btn-primary" onclick="openModal(); return false;">
                         <i class="fas fa-plus"></i>
                         Thêm album
                     </button>
                 </div>
             </div>
 
-            <!-- Search Section -->
+            <!-- Thông báo -->
+            <div th:if="${message}" class="alert alert-success" role="alert">
+                <span th:text="${message}"></span>
+                <button type="button" class="close-btn">×</button>
+            </div>
+            <div th:if="${errorMessage}" class="alert alert-error" role="alert">
+                <span th:text="${errorMessage}"></span>
+                <button type="button" class="close-btn">×</button>
+            </div>
+
+            <!-- Tìm kiếm -->
             <div class="search-section">
-                <form class="search-form" onsubmit="searchAlbums(event)">
+                <form class="search-form" method="get">
                     <div class="form-group">
                         <label for="searchTitle">Tên album</label>
-                        <input type="text" id="searchTitle" placeholder="Nhập tên album...">
+                        <input type="text" id="searchTitle" name="title" placeholder="Nhập tên album..."
+                            th:value="${searchTitle}">
                     </div>
                     <div class="form-group">
                         <label for="searchArtist">Nghệ sĩ</label>
-                        <select id="searchArtist">
+                        <select id="searchArtist" name="artistId">
                             <option value="">Tất cả nghệ sĩ</option>
+                            <option th:each="artist : ${artists}" th:value="${artist.id}" th:text="${artist.name}"
+                                th:selected="${artist.id == searchArtistId}">
+                            </option>
                         </select>
                     </div>
                     <div class="form-group">
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-search"></i>
-                            Tìm kiếm
+                            <i class="fas fa-search"></i> Tìm kiếm
                         </button>
                     </div>
                 </form>
             </div>
+            <div class="albums-table-container">
+                <div class="section-header">
+                    <h2 class="section-title">Danh sách album</h2>
+                </div>
 
-            <!-- Albums Grid -->
-            <div class="albums-grid" id="albumsGrid">
-                <!-- Albums will be loaded here -->
+                <table class="albums-table">
+                    <thead>
+                        <tr>
+                            <th>Ảnh bìa</th>
+                            <th>Tên album</th>
+                            <th>Nghệ sĩ</th>
+                            <th>Ngày phát hành</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="album : ${albums}">
+                            <td class="album-cover-cell">
+                                <img th:if="${album.coverUrl}" th:src="@{${album.coverUrl}}" alt="Album Cover"
+                                    class="album-cover-table">
+                                <div th:unless="${album.coverUrl}" class="album-cover-placeholder">
+                                    <i class="fas fa-compact-disc"
+                                        style="font-size: 2rem; color: var(--muted-foreground);"></i>
+                                </div>
+                            </td>
+                            <td class="album-title-cell" th:text="${album.title}">Tên Album</td>
+                            <td class="album-artist-cell"
+                                th:text="${album.artist != null ? album.artist.name : 'Chưa có'}"></td>
+                            <td class="album-date-cell"
+                                th:text="${album.releaseDate != null ? #temporals.format(album.releaseDate, 'dd/MM/yyyy') : 'Chưa có'}">
+                            </td>
+                            <td class="album-actions-cell">
+                                <a th:href="@{'/musican/albums/edit/' + ${album.id}}" class="btn btn-sm btn-secondary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form th:action="@{'/musican/albums/delete/' + ${album.id}}" method="post"
+                                    class="delete-form" style="display:inline;">
+                                    <button type="submit" class="btn btn-sm btn-danger delete-btn">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </main>
     </div>
-
-    <!-- Add/Edit Album Modal -->
-    <div class="modal" id="albumModal">
+    <div class="modal" id="albumModal" th:classappend="${isEdit} ? ' show' : ''">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title" id="modalTitle">Thêm album mới</h3>
+                <h3 class="modal-title">
+                    <i class="fas" th:classappend="${isEdit} ? 'fa-edit' : 'fa-plus-circle'"></i>
+                    <span th:text="${isEdit} ? 'Cập nhật album' : 'Thêm album mới'"></span>
+                </h3>
                 <button class="close-btn" onclick="closeModal()">&times;</button>
             </div>
-            <form class="modal-form" onsubmit="saveAlbum(event)">
-                <div class="form-group">
-                    <label for="albumTitle">Tên album *</label>
-                    <input type="text" id="albumTitle" required>
-                </div>
-                <div class="form-group">
-                    <label for="albumArtist">Nghệ sĩ *</label>
-                    <select id="albumArtist" required>
-                        <option value="">Chọn nghệ sĩ</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="albumReleaseDate">Ngày phát hành</label>
-                    <input type="date" id="albumReleaseDate">
-                </div>
-                <div class="form-group">
-                    <label for="albumCover">Ảnh bìa (URL)</label>
-                    <input type="url" id="albumCover" placeholder="https://example.com/cover.jpg">
-                </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Hủy</button>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save"></i>
-                        Lưu
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
 
-    <script>
-        let albums = [];
-        let artists = [];
-        let editingAlbumId = null;
+            <div class="modal-body">
+                <form th:action="${isEdit} ? @{'/musican/albums/update/' + ${album.id}} : @{/musican/albums/add}"
+                    method="post" enctype="multipart/form-data" class="modal-form">
+                    <div class="form-group">
+                        <label for="albumTitle" class="required">
+                            <i class="fas fa-heading"></i>
+                            Tên album
+                        </label>
+                        <input type="text" name="title" id="albumTitle"
+                            th:value="${album != null} ? ${album.title} : ''" placeholder="Nhập tên album..." required>
+                    </div>
 
-        // Sample data
-        const sampleAlbums = [
-            {
-                id: 1,
-                title: "Sky Tour",
-                artistId: 1,
-                releaseDate: "2019-07-20",
-                coverUrl: "",
-                createdAt: "2024-01-15"
-            },
-            {
-                id: 2,
-                title: "Ai Cũng Khác Nhau",
-                artistId: 2,
-                releaseDate: "2020-03-15",
-                coverUrl: "",
-                createdAt: "2024-01-20"
-            }
-        ];
+                    <div class="form-group">
+                        <label for="artistSelect" class="required">
+                            <i class="fas fa-user"></i>
+                            Nghệ sĩ
+                        </label>
+                        <select name="artistId" id="artistSelect" required>
+                            <option value="" disabled th:selected="${album == null}">Chọn nghệ sĩ</option>
+                            <option th:each="artist : ${artists}" th:value="${artist.id}" th:text="${artist.name}"
+                                th:selected="${album != null and album.artist != null and artist.id == album.artist.id}">
+                            </option>
+                        </select>
+                    </div>
 
-        // Initialize
-        function init() {
-            checkAuth();
-            loadUserInfo();
-            loadArtists();
+                    <div class="form-group">
+                        <label for="albumReleaseDate">
+                            <i class="fas fa-calendar-alt"></i>
+                            Ngày phát hành
+                        </label>
+                        <input type="date" name="releaseDate" id="albumReleaseDate" th:value="${album != null and album.releaseDate != null} ? 
+                               ${#temporals.format(album.releaseDate, 'yyyy-MM-dd')} : ''">
+                    </div>
 
-            const savedAlbums = localStorage.getItem('albums');
-            if (savedAlbums) {
-                albums = JSON.parse(savedAlbums);
-            } else {
-                albums = sampleAlbums;
-                saveAlbumsToStorage();
-            }
-
-            populateArtistSelects();
-            renderAlbums();
-        }
-
-        // Authentication functions
-        // function checkAuth() {
-        //     const currentUser = localStorage.getItem('currentUser');
-        //     if (!currentUser) {
-        //         window.location.href = 'login.html';
-        //         return;
-        //     }
-        // }
-
-        // function loadUserInfo() {
-        //     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-
-        //     if (currentUser.username) {
-        //         document.getElementById('userName').textContent = currentUser.displayName || currentUser.username;
-        //         document.getElementById('userRole').textContent = getRoleText(currentUser.role);
-        //         document.getElementById('userAvatar').textContent = (currentUser.displayName || currentUser.username).charAt(0).toUpperCase();
-        //     }
-        // }
-
-        // function getRoleText(role) {
-        //     switch(role) {
-        //         case 'ADMIN': return 'Quản trị viên';
-        //         case 'MUSICIAN': return 'Nhạc sĩ';
-        //         case 'USER': return 'Người dùng';
-        //         default: return 'Người dùng';
-        //     }
-        // }
-
-        // function logout() {
-        //     if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
-        //         localStorage.removeItem('currentUser');
-        //         window.location.href = 'login.html';
-        //     }
-        // }
-
-        // Load artists data
-        function loadArtists() {
-            const savedArtists = localStorage.getItem('artists');
-            if (savedArtists) {
-                artists = JSON.parse(savedArtists);
-            }
-        }
-
-        function populateArtistSelects() {
-            const searchSelect = document.getElementById('searchArtist');
-            const modalSelect = document.getElementById('albumArtist');
-
-            // Clear existing options (except first one)
-            searchSelect.innerHTML = '<option value="">Tất cả nghệ sĩ</option>';
-            modalSelect.innerHTML = '<option value="">Chọn nghệ sĩ</option>';
-
-            artists.forEach(artist => {
-                const searchOption = new Option(artist.name, artist.id);
-                const modalOption = new Option(artist.name, artist.id);
-                searchSelect.add(searchOption);
-                modalSelect.add(modalOption);
-            });
-        }
-
-        // Sidebar functions
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('open');
-        }
-
-        // Albums management
-        function renderAlbums(filteredAlbums = null) {
-            const albumsToRender = filteredAlbums || albums;
-            const grid = document.getElementById('albumsGrid');
-
-            grid.innerHTML = albumsToRender.map(album => {
-                const artist = artists.find(a => a.id == album.artistId);
-                const artistName = artist ? artist.name : 'Nghệ sĩ không xác định';
-
-                return `
-                    <div class="album-card">
-                        <div class="album-cover">
-                            ${album.coverUrl ?
-                        `<img src="${album.coverUrl}" alt="${album.title}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                 <i class="fas fa-compact-disc" style="display: none;"></i>` :
-                        `<i class="fas fa-compact-disc"></i>`
-                    }
-                        </div>
-                        <div class="album-info">
-                            <h3 class="album-title">${album.title}</h3>
-                            <p class="album-artist">${artistName}</p>
-                            <div class="album-meta">
-                                <span>${album.releaseDate ? formatDate(album.releaseDate) : 'Chưa phát hành'}</span>
-                                <span>${getTrackCount(album.id)} bài hát</span>
+                    <div class="form-group">
+                        <label class="required">
+                            <i class="fas fa-image"></i>
+                            Ảnh bìa
+                        </label>
+                        <div class="file-input-container">
+                            <div class="file-input-wrapper">
+                                <label for="albumCoverFile" class="file-input-label">
+                                    <i class="fas fa-upload"></i>
+                                    Chọn ảnh
+                                </label>
+                                <input type="file" name="coverFile" id="albumCoverFile" accept="image/*"
+                                    onchange="previewAlbumCover(event)" style="display: none;">
+                                <span id="fileName" class="file-name">Chưa chọn file</span>
                             </div>
-                            <div class="album-actions">
-                                <button class="btn btn-sm btn-secondary" onclick="editAlbum(${album.id})">
-                                    <i class="fas fa-edit"></i>
-                                    Sửa
-                                </button>
-                                <button class="btn btn-sm btn-danger" onclick="deleteAlbum(${album.id})">
-                                    <i class="fas fa-trash"></i>
-                                    Xóa
-                                </button>
+
+                            <div class="preview-container">
+                                <span class="preview-label">Xem trước:</span>
+                                <!-- Ảnh hiện tại (khi chỉnh sửa) -->
+                                <img id="albumCoverPreview" th:if="${album != null and album.coverUrl != null}"
+                                    th:src="@{${album.coverUrl}}" class="preview-image">
+                                <!-- Ảnh xem trước (khi chọn file mới) -->
+                                <img id="albumCoverPreviewEmpty" src="" class="preview-image" style="display:none;">
+                                <!-- Placeholder khi không có ảnh -->
+                                <div id="noPreview" th:unless="${album != null and album.coverUrl != null}"
+                                    class="preview-placeholder"
+                                    style="display: flex; align-items: center; justify-content: center; width: 200px; height: 150px; background: var(--muted); border-radius: var(--radius); color: var(--muted-foreground);">
+                                    <i class="fas fa-image" style="font-size: 2rem;"></i>
+                                </div>
                             </div>
                         </div>
                     </div>
-                `;
-            }).join('');
-        }
+                </form>
+            </div>
 
-        function getTrackCount(albumId) {
-            // Simulate getting track count for this album
-            const tracks = JSON.parse(localStorage.getItem('tracks') || '[]');
-            return tracks.filter(track => track.albumId == albumId).length;
-        }
-
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('vi-VN');
-        }
-
-        function searchAlbums(event) {
-            event.preventDefault();
-
-            const searchTitle = document.getElementById('searchTitle').value.toLowerCase();
-            const searchArtistId = document.getElementById('searchArtist').value;
-
-            const filtered = albums.filter(album => {
-                const titleMatch = !searchTitle || album.title.toLowerCase().includes(searchTitle);
-                const artistMatch = !searchArtistId || album.artistId == searchArtistId;
-                return titleMatch && artistMatch;
-            });
-
-            renderAlbums(filtered);
-        }
-
-        // Modal functions
-        function openAddModal() {
-            editingAlbumId = null;
-            document.getElementById('modalTitle').textContent = 'Thêm album mới';
-            document.getElementById('albumTitle').value = '';
-            document.getElementById('albumArtist').value = '';
-            document.getElementById('albumReleaseDate').value = '';
-            document.getElementById('albumCover').value = '';
+            <div class="modal-footer">
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">
+                        <i class="fas fa-times"></i>
+                        Hủy
+                    </button>
+                    <button type="submit" class="btn btn-primary" th:text="${isEdit} ? 'Cập nhật' : 'Thêm mới'"
+                        onclick="document.querySelector('.modal-form').submit()">
+                        <i class="fas" th:classappend="${isEdit} ? 'fa-save' : 'fa-plus'"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function openModal() {
             document.getElementById('albumModal').classList.add('show');
         }
-
-        function editAlbum(id) {
-            const album = albums.find(a => a.id === id);
-            if (!album) return;
-
-            editingAlbumId = id;
-            document.getElementById('modalTitle').textContent = 'Sửa thông tin album';
-            document.getElementById('albumTitle').value = album.title;
-            document.getElementById('albumArtist').value = album.artistId;
-            document.getElementById('albumReleaseDate').value = album.releaseDate || '';
-            document.getElementById('albumCover').value = album.coverUrl || '';
-            document.getElementById('albumModal').classList.add('show');
-        }
-
         function closeModal() {
             document.getElementById('albumModal').classList.remove('show');
-            editingAlbumId = null;
         }
 
-        function saveAlbum(event) {
-            event.preventDefault();
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const form = this.closest('.delete-form');
+                    Swal.fire({
+                        title: 'Xác nhận xóa',
+                        text: 'Hành động này không thể hoàn tác!',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#ef4444',
+                        cancelButtonColor: '#6b7280',
+                        confirmButtonText: 'Xóa',
+                        cancelButtonText: 'Hủy'
+                    }).then((result) => {
+                        if (result.isConfirmed) form.submit();
+                    });
+                });
+            });
 
-            const title = document.getElementById('albumTitle').value.trim();
-            const artistId = parseInt(document.getElementById('albumArtist').value);
-            const releaseDate = document.getElementById('albumReleaseDate').value;
-            const coverUrl = document.getElementById('albumCover').value.trim();
+            document.querySelectorAll('.close-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                    const alert = this.closest('.alert');
+                    if (alert) {
+                        alert.classList.add('fade-out');
+                        setTimeout(() => alert.remove(), 300);
+                    }
+                });
+            });
 
-            if (!title || !artistId) {
-                alert('Vui lòng nhập đầy đủ thông tin bắt buộc!');
-                return;
-            }
+            document.querySelectorAll('.alert').forEach(alert => {
+                setTimeout(() => {
+                    alert.classList.add('fade-out');
+                    setTimeout(() => alert.remove(), 300);
+                }, 2000);
+            });
+        });
 
-            if (editingAlbumId) {
-                // Update existing album
-                const albumIndex = albums.findIndex(a => a.id === editingAlbumId);
-                if (albumIndex !== -1) {
-                    albums[albumIndex] = {
-                        ...albums[albumIndex],
-                        title,
-                        artistId,
-                        releaseDate,
-                        coverUrl
-                    };
-                }
-            } else {
-                // Add new album
-                const newAlbum = {
-                    id: Date.now(),
-                    title,
-                    artistId,
-                    releaseDate,
-                    coverUrl,
-                    createdAt: new Date().toISOString().split('T')[0]
+        function previewAlbumCover(event) {
+            const file = event.target.files[0];
+            const previewOld = document.getElementById('albumCoverPreview');
+            const previewNew = document.getElementById('albumCoverPreviewEmpty');
+            const noPreview = document.getElementById('noPreview');
+            const fileName = document.getElementById('fileName');
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    previewNew.src = e.target.result;
+                    previewNew.style.display = 'block';
+                    previewNew.classList.add('file-uploaded');
+
+                    if (previewOld) previewOld.style.display = 'none';
+                    if (noPreview) noPreview.style.display = 'none';
+
+                    fileName.textContent = file.name;
+                    fileName.style.color = 'var(--accent)';
+
+                    setTimeout(() => {
+                        previewNew.classList.remove('file-uploaded');
+                    }, 500);
                 };
-                albums.push(newAlbum);
-            }
-
-            saveAlbumsToStorage();
-            renderAlbums();
-            closeModal();
-
-            alert(editingAlbumId ? 'Cập nhật album thành công!' : 'Thêm album thành công!');
-        }
-
-        function deleteAlbum(id) {
-            const album = albums.find(a => a.id === id);
-            if (!album) return;
-
-            if (confirm(`Bạn có chắc chắn muốn xóa album "${album.title}"?`)) {
-                albums = albums.filter(a => a.id !== id);
-                saveAlbumsToStorage();
-                renderAlbums();
-                alert('Xóa album thành công!');
+                reader.readAsDataURL(file);
+            } else {
+                previewNew.src = '';
+                previewNew.style.display = 'none';
+                if (previewOld) previewOld.style.display = 'block';
+                if (noPreview && !previewOld) noPreview.style.display = 'flex';
+                fileName.textContent = 'Chưa chọn file';
+                fileName.style.color = 'var(--muted-foreground)';
             }
         }
-
-        function saveAlbumsToStorage() {
-            localStorage.setItem('albums', JSON.stringify(albums));
-        }
-
-        function exportData() {
-            const dataStr = JSON.stringify(albums, null, 2);
-            const dataBlob = new Blob([dataStr], { type: 'application/json' });
-            const url = URL.createObjectURL(dataBlob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'albums_data.json';
-            link.click();
-            URL.revokeObjectURL(url);
-        }
-
-        // Close modal when clicking outside
         document.getElementById('albumModal').addEventListener('click', function (e) {
             if (e.target === this) {
                 closeModal();
             }
         });
-
-        // Initialize when page loads
-        window.addEventListener('load', init);
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && document.getElementById('albumModal').classList.contains('show')) {
+                closeModal();
+            }
+        });
     </script>
 </body>
 

@@ -10,4 +10,8 @@ import com.musical.musican.Model.Entity.Album;
 @Repository
 public interface AlbumRepository extends JpaRepository<Album, Integer> {
     List<Album> findByArtistId(Integer artistId);
+
+    List<Album> findByTitleContainingIgnoreCase(String title);
+
+    List<Album> findByTitleContainingIgnoreCaseAndArtistId(String title, Integer artistId);
 }

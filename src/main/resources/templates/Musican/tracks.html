@@ -9,6 +9,7 @@
         href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600;700&family=Open+Sans:wght@400;500;600&display=swap"
         rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
     <style>
         :root {
             --background: #ffffff;
@@ -166,7 +167,7 @@
 
         .main-header {
             display: flex;
-            justify-content: between;
+            justify-content: space-between;
             align-items: center;
             margin-bottom: 2rem;
             padding-bottom: 1rem;
@@ -478,35 +479,102 @@
                 flex-direction: column;
             }
         }
+
+        .alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1rem;
+            border-radius: var(--radius);
+            font-size: 0.95rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            width: 350px;
+            max-width: 90%;
+            z-index: 1000;
+            border-left: 4px solid;
+        }
+
+        .alert-success {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: #065f46;
+            border-color: #10b981;
+        }
+
+        .alert-error {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: #991b1b;
+            border-color: #ef4444;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            cursor: pointer;
+            color: inherit;
+            opacity: 0.7;
+            transition: all 0.3s ease;
+            padding: 0;
+            margin-left: 0.75rem;
+        }
+
+        .close-btn:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .alert.fade-out {
+            animation: fadeOut 0.3s ease forwards;
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+            to {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
     </style>
 </head>
 
 <body>
     <div class="dashboard-container">
-        <!-- Mobile Menu Button -->
         <button class="mobile-menu-btn" onclick="toggleSidebar()">
             <i class="fas fa-bars"></i>
         </button>
-
         <div th:replace="~{/layout/slidesbarMusican}"></div>
-
-        <!-- Main Content -->
         <main class="main-content">
             <div class="main-header">
                 <h1>Quản lý bài hát</h1>
                 <div class="header-actions">
-                    <button class="btn btn-secondary" onclick="exportData()">
-                        <i class="fas fa-download"></i>
-                        Xuất dữ liệu
-                    </button>
-                    <button class="btn btn-primary" onclick="openAddModal()">
+                    <button class="btn btn-primary" onclick="openModal()">
                         <i class="fas fa-plus"></i>
                         Thêm bài hát
                     </button>
                 </div>
             </div>
-
-            <!-- Search Section -->
             <div class="search-section">
                 <form class="search-form" onsubmit="searchTracks(event)">
                     <div class="form-group">
@@ -535,8 +603,14 @@
                     </div>
                 </form>
             </div>
-
-            <!-- Tracks Table -->
+            <div th:if="${message}" class="alert alert-success" role="alert">
+                <span th:text="${message}"></span>
+                <button type="button" class="close-btn">×</button>
+            </div>
+            <div th:if="${errorMessage}" class="alert alert-error" role="alert">
+                <span th:text="${errorMessage}"></span>
+                <button type="button" class="close-btn">×</button>
+            </div>
             <div class="tracks-section">
                 <div class="section-header">
                     <h2 class="section-title">Danh sách bài hát</h2>
@@ -604,335 +678,52 @@
             </form>
         </div>
     </div>
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        let tracks = [];
-        let albums = [];
-        let editingTrackId = null;
-
-        // Sample data
-        const sampleTracks = [
-            {
-                id: 1,
-                title: "Chúng Ta Của Hiện Tại",
-                albumId: 1,
-                duration: 240,
-                audioUrl: "https://example.com/song1.mp3",
-                sourceType: "EXTERNAL",
-                createdAt: "2024-01-15"
-            },
-            {
-                id: 2,
-                title: "Ai Cũng Khác Nhau",
-                albumId: 2,
-                duration: 210,
-                audioUrl: "https://example.com/song2.mp3",
-                sourceType: "UPLOAD",
-                createdAt: "2024-01-20"
-            }
-        ];
-
-        // Initialize
-        function init() {
-            checkAuth();
-            loadUserInfo();
-            loadAlbums();
-
-            const savedTracks = localStorage.getItem('tracks');
-            if (savedTracks) {
-                tracks = JSON.parse(savedTracks);
-            } else {
-                tracks = sampleTracks;
-                saveTracksToStorage();
-            }
-
-            populateAlbumSelects();
-            renderTracks();
-        }
-
-        // Authentication functions
-        // function checkAuth() {
-        //     const currentUser = localStorage.getItem('currentUser');
-        //     if (!currentUser) {
-        //         window.location.href = 'login.html';
-        //         return;
-        //     }
-        // }
-
-        // function loadUserInfo() {
-        //     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-
-        //     if (currentUser.username) {
-        //         document.getElementById('userName').textContent = currentUser.displayName || currentUser.username;
-        //         document.getElementById('userRole').textContent = getRoleText(currentUser.role);
-        //         document.getElementById('userAvatar').textContent = (currentUser.displayName || currentUser.username).charAt(0).toUpperCase();
-        //     }
-        // }
-
-        // function getRoleText(role) {
-        //     switch(role) {
-        //         case 'ADMIN': return 'Quản trị viên';
-        //         case 'MUSICIAN': return 'Nhạc sĩ';
-        //         case 'USER': return 'Người dùng';
-        //         default: return 'Người dùng';
-        //     }
-        // }
-
-        // function logout() {
-        //     if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
-        //         localStorage.removeItem('currentUser');
-        //         window.location.href = 'login.html';
-        //     }
-        // }
-
-        // Load albums data
-        function loadAlbums() {
-            const savedAlbums = localStorage.getItem('albums');
-            if (savedAlbums) {
-                albums = JSON.parse(savedAlbums);
-            }
-        }
-
-        function populateAlbumSelects() {
-            const searchSelect = document.getElementById('searchAlbum');
-            const modalSelect = document.getElementById('trackAlbum');
-
-            searchSelect.innerHTML = '<option value="">Tất cả album</option>';
-            modalSelect.innerHTML = '<option value="">Chọn album (tùy chọn)</option>';
-
-            albums.forEach(album => {
-                const searchOption = new Option(album.title, album.id);
-                const modalOption = new Option(album.title, album.id);
-                searchSelect.add(searchOption);
-                modalSelect.add(modalOption);
-            });
-        }
-
-        // Sidebar functions
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('open');
-        }
-
-        // Tracks management
-        function renderTracks(filteredTracks = null) {
-            const tracksToRender = filteredTracks || tracks;
-            const tbody = document.getElementById('tracksTableBody');
-            const countElement = document.getElementById('trackCount');
-
-            countElement.textContent = `${tracksToRender.length} bài hát`;
-
-            tbody.innerHTML = tracksToRender.map(track => {
-                const album = albums.find(a => a.id == track.albumId);
-                const albumTitle = album ? album.title : 'Không có album';
-
-                return `
-                    <tr>
-                        <td>
-                            <div class="track-info">
-                                <div class="track-icon">
-                                    <i class="fas fa-music"></i>
-                                </div>
-                                <div class="track-details">
-                                    <h3>${track.title}</h3>
-                                    <p>Tạo: ${formatDate(track.createdAt)}</p>
-                                </div>
-                            </div>
-                        </td>
-                        <td>${albumTitle}</td>
-                        <td>
-                            ${track.duration ? `<span class="duration-badge">${formatDuration(track.duration)}</span>` : '-'}
-                        </td>
-                        <td>
-                            <span class="source-badge ${track.sourceType.toLowerCase()}">${getSourceText(track.sourceType)}</span>
-                        </td>
-                        <td>
-                            <div class="actions">
-                                <button class="btn btn-sm btn-secondary" onclick="playTrack('${track.audioUrl}')">
-                                    <i class="fas fa-play"></i>
-                                    Phát
-                                </button>
-                                <button class="btn btn-sm btn-secondary" onclick="editTrack(${track.id})">
-                                    <i class="fas fa-edit"></i>
-                                    Sửa
-                                </button>
-                                <button class="btn btn-sm btn-danger" onclick="deleteTrack(${track.id})">
-                                    <i class="fas fa-trash"></i>
-                                    Xóa
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        function getSourceText(sourceType) {
-            return sourceType === 'UPLOAD' ? 'Upload' : 'External';
-        }
-
-        function formatDuration(seconds) {
-            const minutes = Math.floor(seconds / 60);
-            const remainingSeconds = seconds % 60;
-            return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
-        }
-
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('vi-VN');
-        }
-
-        function searchTracks(event) {
-            event.preventDefault();
-
-            const searchTitle = document.getElementById('searchTitle').value.toLowerCase();
-            const searchAlbumId = document.getElementById('searchAlbum').value;
-            const searchSource = document.getElementById('searchSource').value;
-
-            const filtered = tracks.filter(track => {
-                const titleMatch = !searchTitle || track.title.toLowerCase().includes(searchTitle);
-                const albumMatch = !searchAlbumId || track.albumId == searchAlbumId;
-                const sourceMatch = !searchSource || track.sourceType === searchSource;
-                return titleMatch && albumMatch && sourceMatch;
-            });
-
-            renderTracks(filtered);
-        }
-
-        function playTrack(audioUrl) {
-            // Simple audio player
-            const audio = new Audio(audioUrl);
-            audio.play().catch(e => {
-                alert('Không thể phát bài hát này. Vui lòng kiểm tra URL âm thanh.');
-            });
-        }
-
-        // Modal functions
-        function openAddModal() {
-            editingTrackId = null;
-            document.getElementById('modalTitle').textContent = 'Thêm bài hát mới';
-            document.getElementById('trackTitle').value = '';
-            document.getElementById('trackAlbum').value = '';
-            document.getElementById('trackDuration').value = '';
-            document.getElementById('trackSource').value = '';
-            document.getElementById('trackAudioUrl').value = '';
+        function openModal() {
             document.getElementById('trackModal').classList.add('show');
         }
-
-        function editTrack(id) {
-            const track = tracks.find(t => t.id === id);
-            if (!track) return;
-
-            editingTrackId = id;
-            document.getElementById('modalTitle').textContent = 'Sửa thông tin bài hát';
-            document.getElementById('trackTitle').value = track.title;
-            document.getElementById('trackAlbum').value = track.albumId || '';
-            document.getElementById('trackDuration').value = track.duration || '';
-            document.getElementById('trackSource').value = track.sourceType;
-            document.getElementById('trackAudioUrl').value = track.audioUrl;
-            document.getElementById('trackModal').classList.add('show');
-        }
-
         function closeModal() {
             document.getElementById('trackModal').classList.remove('show');
-            editingTrackId = null;
         }
 
-        function toggleAudioUrl() {
-            const sourceType = document.getElementById('trackSource').value;
-            const audioUrlInput = document.getElementById('trackAudioUrl');
-
-            if (sourceType === 'UPLOAD') {
-                audioUrlInput.placeholder = 'File sẽ được upload...';
-            } else {
-                audioUrlInput.placeholder = 'https://example.com/song.mp3';
-            }
-        }
-
-        function saveTrack(event) {
-            event.preventDefault();
-
-            const title = document.getElementById('trackTitle').value.trim();
-            const albumId = document.getElementById('trackAlbum').value ? parseInt(document.getElementById('trackAlbum').value) : null;
-            const duration = document.getElementById('trackDuration').value ? parseInt(document.getElementById('trackDuration').value) : null;
-            const sourceType = document.getElementById('trackSource').value;
-            const audioUrl = document.getElementById('trackAudioUrl').value.trim();
-
-            if (!title || !sourceType || !audioUrl) {
-                alert('Vui lòng nhập đầy đủ thông tin bắt buộc!');
-                return;
-            }
-
-            if (editingTrackId) {
-                // Update existing track
-                const trackIndex = tracks.findIndex(t => t.id === editingTrackId);
-                if (trackIndex !== -1) {
-                    tracks[trackIndex] = {
-                        ...tracks[trackIndex],
-                        title,
-                        albumId,
-                        duration,
-                        sourceType,
-                        audioUrl
-                    };
-                }
-            } else {
-                // Add new track
-                const newTrack = {
-                    id: Date.now(),
-                    title,
-                    albumId,
-                    duration,
-                    sourceType,
-                    audioUrl,
-                    createdAt: new Date().toISOString().split('T')[0]
-                };
-                tracks.push(newTrack);
-            }
-
-            saveTracksToStorage();
-            renderTracks();
-            closeModal();
-
-            alert(editingTrackId ? 'Cập nhật bài hát thành công!' : 'Thêm bài hát thành công!');
-        }
-
-        function deleteTrack(id) {
-            const track = tracks.find(t => t.id === id);
-            if (!track) return;
-
-            if (confirm(`Bạn có chắc chắn muốn xóa bài hát "${track.title}"?`)) {
-                tracks = tracks.filter(t => t.id !== id);
-                saveTracksToStorage();
-                renderTracks();
-                alert('Xóa bài hát thành công!');
-            }
-        }
-
-        function saveTracksToStorage() {
-            localStorage.setItem('tracks', JSON.stringify(tracks));
-        }
-
-        function exportData() {
-            const dataStr = JSON.stringify(tracks, null, 2);
-            const dataBlob = new Blob([dataStr], { type: 'application/json' });
-            const url = URL.createObjectURL(dataBlob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = 'tracks_data.json';
-            link.click();
-            URL.revokeObjectURL(url);
-        }
-
-        // Close modal when clicking outside
-        document.getElementById('trackModal').addEventListener('click', function (e) {
-            if (e.target === this) {
-                closeModal();
-            }
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const form = this.closest('.delete-form');
+                    Swal.fire({
+                        title: 'Xác nhận xóa',
+                        text: 'Hành động này không thể hoàn tác!',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#ef4444',
+                        cancelButtonColor: '#6b7280',
+                        confirmButtonText: 'Xóa',
+                        cancelButtonText: 'Hủy'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit();
+                        }
+                    });
+                });
+            });
+            document.querySelectorAll('.close-btn').forEach(button => {
+                button.addEventListener('click', function () {
+                    const alert = this.closest('.alert');
+                    if (alert) {
+                        alert.classList.add('fade-out');
+                        setTimeout(() => alert.remove(), 300);
+                    }
+                });
+            });
+            document.querySelectorAll('.alert').forEach(alert => {
+                setTimeout(() => {
+                    alert.classList.add('fade-out');
+                    setTimeout(() => alert.remove(), 300);
+                }, 2000);
+            });
         });
-
-        // Initialize when page loads
-        window.addEventListener('load', init);
     </script>
 </body>
 
