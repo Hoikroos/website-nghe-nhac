@@ -3,12 +3,13 @@ package com.musical.musican.Service;
 import java.util.List;
 import java.util.Optional;
 
+import com.musical.musican.Model.Entity.Account;
 import com.musical.musican.Model.Entity.Album;
 
 public interface AlbumService {
     List<Album> findAll();
 
-     List<Album> searchAlbums(String title, Integer artistId);
+    List<Album> searchAlbums(String title, Integer artistId);
 
     Optional<Album> findById(Integer id);
 
@@ -17,5 +18,9 @@ public interface AlbumService {
     Album update(Integer id, Album albumData);
 
     void delete(Integer id);
+
+    Account getCurrentAccount();
+
+    List<Album> findByAccount(Account account);
 
 }

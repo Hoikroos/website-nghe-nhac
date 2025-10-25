@@ -1,5 +1,6 @@
 package com.musical.musican.Controller.MUSICAN;
 
+import com.musical.musican.Model.Entity.Account;
 import com.musical.musican.Model.Entity.Album;
 import com.musical.musican.Model.Entity.Artist;
 import com.musical.musican.Service.AlbumService;
@@ -33,15 +34,25 @@ public class AlbumController {
     public String index(
             @RequestParam(value = "title", required = false) String title,
             @RequestParam(value = "artistId", required = false) Integer artistId,
-            Model model) {
+            Model model,
+            RedirectAttributes redirectAttributes) {
+        try {
+            Account currentAccount = albumService.getCurrentAccount();
+            List<Album> albums = albumService.searchAlbums(title, artistId).stream()
+                    .filter(a -> a.getAccount() != null && a.getAccount().getId().equals(currentAccount.getId()))
+                    .toList();
 
-        List<Album> albums = albumService.searchAlbums(title, artistId);
-        List<Artist> artists = artistService.findAll();
+            List<Artist> artists = artistService.findAll();
 
-        model.addAttribute("albums", albums);
-        model.addAttribute("artists", artists);
-        model.addAttribute("searchTitle", title);
-        model.addAttribute("searchArtistId", artistId);
+            model.addAttribute("albums", albums);
+            model.addAttribute("artists", artists);
+            model.addAttribute("searchTitle", title);
+            model.addAttribute("searchArtistId", artistId);
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi: " + e.getMessage());
+            return "redirect:/musican/dashboard";
+        }
 
         return "Musican/albums";
     }
@@ -61,6 +72,7 @@ public class AlbumController {
             Album album = Album.builder()
                     .title(title)
                     .artist(artist)
+                    .account(albumService.getCurrentAccount())
                     .coverUrl(coverUrl)
                     .releaseDate((releaseDate != null && !releaseDate.isEmpty()) ? LocalDate.parse(releaseDate) : null)
                     .build();

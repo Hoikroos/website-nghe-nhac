@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Hệ thống quản lý nhạc</title>
-    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600;700&family=Open+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600;700&family=Open+Sans:wght@400;500;600&display=swap"
+        rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -411,157 +414,117 @@
         }
     </style>
 </head>
+
 <body>
     <div class="dashboard-container">
-
         <button class="mobile-menu-btn" onclick="toggleSidebar()">
             <i class="fas fa-bars"></i>
         </button>
-        <!-- Sidebar -->
-         <div th:replace="~{/layout/slidesbarMusican}"></div>
+        <div th:replace="~{/layout/slidesbarMusican}"></div>
         <main class="main-content">
-            <div class="main-header">
+            <header class="main-header">
                 <h1>Dashboard</h1>
-                <div class="header-actions">
-                    <button class="btn btn-secondary">
-                        <i class="fas fa-download"></i>
-                        Xuất báo cáo
-                    </button>
-                    <button class="btn btn-primary">
-                        <i class="fas fa-plus"></i>
-                        Thêm mới
-                    </button>
-                </div>
-            </div>
-
-            <!-- Stats Cards -->
-            <div class="stats-grid">
+            </header>
+            <div class="stats-grid" th:with="stats=${stats}">
                 <div class="stat-card">
                     <div class="stat-header">
                         <div class="stat-icon artists">
                             <i class="fas fa-microphone"></i>
                         </div>
                     </div>
-                    <div class="stat-number" id="artistsCount">156</div>
+                    <div class="stat-number" th:text="${stats.totalArtists}"></div>
                     <div class="stat-label">Nghệ sĩ</div>
-                    <div class="stat-change positive">+12% so với tháng trước</div>
+                    <div class="stat-change" th:classappend="${stats.artistsChange >= 0} ? 'positive' : 'negative'"
+                        th:text="'+' + ${#numbers.formatDecimal(stats.artistsChange, 1, 1)} + '% so với tháng trước'">
+                    </div>
                 </div>
-
                 <div class="stat-card">
                     <div class="stat-header">
-                        <div class="stat-icon albums">
+                        <div class="stat-icon artists">
                             <i class="fas fa-compact-disc"></i>
                         </div>
                     </div>
-                    <div class="stat-number" id="albumsCount">89</div>
+                    <div class="stat-number" th:text="${stats.totalAlbums}"></div>
                     <div class="stat-label">Album</div>
-                    <div class="stat-change positive">+8% so với tháng trước</div>
+                    <div class="stat-change" th:classappend="${stats.albumsChange >= 0} ? 'positive' : 'negative'"
+                        th:text="'+' + ${#numbers.formatDecimal(stats.albumsChange, 1, 1)} + '% so với tháng trước'">
+                    </div>
                 </div>
-
                 <div class="stat-card">
                     <div class="stat-header">
-                        <div class="stat-icon tracks">
+                        <div class="stat-icon artists">
+                            <i class="fas fa-layer-group"></i>
+                        </div>
+                    </div>
+                    <div class="stat-number" th:text="${stats.totalPlaylists}"></div>
+                    <div class="stat-label">Playlist</div>
+                    <div class="stat-change" th:classappend="${stats.playlistsChange >= 0} ? 'positive' : 'negative'"
+                        th:text="'+' + ${#numbers.formatDecimal(stats.playlistsChange, 1, 1)} + '% so với tháng trước'">
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon artists">
                             <i class="fas fa-music"></i>
                         </div>
                     </div>
-                    <div class="stat-number" id="tracksCount">1,247</div>
-                    <div class="stat-label">Bài hát</div>
-                    <div class="stat-change positive">+15% so với tháng trước</div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon playlists">
-                            <i class="fas fa-list"></i>
-                        </div>
+                    <div class="stat-number" th:text="${stats.totalTracks}"></div>
+                    <div class="stat-label">Bài Hát</div>
+                    <div class="stat-change" th:classappend="${stats.tracksChange >= 0} ? 'positive' : 'negative'"
+                        th:text="'+' + ${#numbers.formatDecimal(stats.tracksChange, 1, 1)} + '% so với tháng trước'">
                     </div>
-                    <div class="stat-number" id="playlistsCount">342</div>
-                    <div class="stat-label">Playlist</div>
-                    <div class="stat-change positive">+23% so với tháng trước</div>
                 </div>
             </div>
 
-            <!-- Recent Activity -->
             <div class="content-section">
                 <div class="section-header">
                     <h2 class="section-title">Hoạt động gần đây</h2>
-                    <a href="#" class="btn btn-secondary">Xem tất cả</a>
                 </div>
-                <ul class="activity-list">
+                <ul class="activity-list" th:each="activity : ${recentActivities}">
                     <li class="activity-item">
                         <div class="activity-icon">
-                            <i class="fas fa-plus"></i>
+                            <i th:class="${activity.icon}"></i>
                         </div>
                         <div class="activity-content">
-                            <div class="activity-title">Thêm album mới "Những bài hát hay nhất"</div>
-                            <div class="activity-time">2 giờ trước</div>
-                        </div>
-                    </li>
-                    <li class="activity-item">
-                        <div class="activity-icon">
-                            <i class="fas fa-edit"></i>
-                        </div>
-                        <div class="activity-content">
-                            <div class="activity-title">Cập nhật thông tin nghệ sĩ "Sơn Tùng M-TP"</div>
-                            <div class="activity-time">4 giờ trước</div>
-                        </div>
-                    </li>
-                    <li class="activity-item">
-                        <div class="activity-icon">
-                            <i class="fas fa-heart"></i>
-                        </div>
-                        <div class="activity-content">
-                            <div class="activity-title">Người dùng thêm 15 bài hát vào yêu thích</div>
-                            <div class="activity-time">6 giờ trước</div>
-                        </div>
-                    </li>
-                    <li class="activity-item">
-                        <div class="activity-icon">
-                            <i class="fas fa-upload"></i>
-                        </div>
-                        <div class="activity-content">
-                            <div class="activity-title">Upload 8 bài hát mới vào hệ thống</div>
-                            <div class="activity-time">1 ngày trước</div>
+                            <div class="activity-title" th:text="${activity.title}"></div>
+                            <div class="activity-time" th:text="${activity.timeAgo}"></div>
                         </div>
                     </li>
                 </ul>
             </div>
-
-            <!-- Quick Actions -->
             <div class="content-section">
                 <div class="section-header">
                     <h2 class="section-title">Thao tác nhanh</h2>
                 </div>
                 <div class="stats-grid">
-                    <a th:href="@{/musican/artists}" class="stat-card" style="text-decoration: none; color: inherit;">
+                    <a th:href="@{/musican/artists}" class="stat-card"
+                        style="text-decoration: none; color: inherit;">
                         <div class="stat-header">
-                            <div class="stat-icon artists">
-                                <i class="fas fa-plus"></i>
-                            </div>
+                            <div class="stat-icon artists"><i class="fas fa-plus"></i></div>
                         </div>
-                        <div class="stat-label">Thêm nghệ sĩ mới</div>
+                        <div class="stat-label">Thêm nghệ sĩ</div>
                     </a>
-                    <a th:href="@{/musican/albums}" class="stat-card" style="text-decoration: none; color: inherit;">
+
+                    <a th:href="@{/musican/albums}" class="stat-card"
+                        style="text-decoration: none; color: inherit;">
                         <div class="stat-header">
-                            <div class="stat-icon albums">
-                                <i class="fas fa-plus"></i>
-                            </div>
+                            <div class="stat-icon albums"><i class="fas fa-plus"></i></div>
                         </div>
-                        <div class="stat-label">Tạo album mới</div>
+                        <div class="stat-label">Tạo album</div>
                     </a>
-                    <a th:href="@{/musican/tracks}" class="stat-card" style="text-decoration: none; color: inherit;">
+
+                    <a th:href="@{/musican/tracks}" class="stat-card"
+                        style="text-decoration: none; color: inherit;">
                         <div class="stat-header">
-                            <div class="stat-icon tracks">
-                                <i class="fas fa-upload"></i>
-                            </div>
+                            <div class="stat-icon tracks"><i class="fas fa-upload"></i></div>
                         </div>
                         <div class="stat-label">Upload bài hát</div>
                     </a>
-                    <a th:href="@{musican/playlists}" class="stat-card" style="text-decoration: none; color: inherit;">
+
+                    <a th:href="@{/musican/playlists}" class="stat-card"
+                        style="text-decoration: none; color: inherit;">
                         <div class="stat-header">
-                            <div class="stat-icon playlists">
-                                <i class="fas fa-plus"></i>
-                            </div>
+                            <div class="stat-icon playlists"><i class="fas fa-plus"></i></div>
                         </div>
                         <div class="stat-label">Tạo playlist</div>
                     </a>
@@ -571,92 +534,10 @@
     </div>
 
     <script>
-        // Toggle sidebar for mobile
         function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('open');
+            document.getElementById('sidebar').classList.toggle('open');
         }
-
-        // Close sidebar when clicking outside on mobile
-        document.addEventListener('click', function(e) {
-            const sidebar = document.getElementById('sidebar');
-            const menuBtn = document.querySelector('.mobile-menu-btn');
-            
-            if (window.innerWidth <= 768 && 
-                !sidebar.contains(e.target) && 
-                !menuBtn.contains(e.target) && 
-                sidebar.classList.contains('open')) {
-                sidebar.classList.remove('open');
-            }
-        });
-
-        // Load user info
-        // function loadUserInfo() {
-        //     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-            
-        //     if (currentUser.username) {
-        //         document.getElementById('userName').textContent = currentUser.displayName || currentUser.username;
-        //         document.getElementById('userRole').textContent = getRoleText(currentUser.role);
-        //         document.getElementById('userAvatar').textContent = (currentUser.displayName || currentUser.username).charAt(0).toUpperCase();
-        //     }
-        // }
-
-        // function getRoleText(role) {
-        //     switch(role) {
-        //         case 'ADMIN': return 'Quản trị viên';
-        //         case 'MUSICIAN': return 'Nhạc sĩ';
-        //         case 'USER': return 'Người dùng';
-        //         default: return 'Người dùng';
-        //     }
-        // }
-
-        // // Logout function
-        // function logout() {
-        //     if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
-        //         localStorage.removeItem('currentUser');
-        //         window.location.href = 'login.html';
-        //     }
-        // }
-
-        // // Check authentication
-        // function checkAuth() {
-        //     const currentUser = localStorage.getItem('currentUser');
-        //     if (!currentUser) {
-        //         window.location.href = 'login.html';
-        //         return;
-        //     }
-        //     loadUserInfo();
-        // }
-
-        // Simulate loading stats from database
-        function loadStats() {
-            // Giả lập dữ liệu từ database
-            const stats = {
-                artists: Math.floor(Math.random() * 200) + 100,
-                albums: Math.floor(Math.random() * 100) + 50,
-                tracks: Math.floor(Math.random() * 1500) + 800,
-                playlists: Math.floor(Math.random() * 400) + 200
-            };
-
-            document.getElementById('artistsCount').textContent = stats.artists;
-            document.getElementById('albumsCount').textContent = stats.albums;
-            document.getElementById('tracksCount').textContent = stats.tracks.toLocaleString();
-            document.getElementById('playlistsCount').textContent = stats.playlists;
-        }
-
-        // Initialize dashboard
-        window.addEventListener('load', function() {
-            checkAuth();
-            loadStats();
-        });
-
-        // Handle window resize
-        window.addEventListener('resize', function() {
-            const sidebar = document.getElementById('sidebar');
-            if (window.innerWidth > 768) {
-                sidebar.classList.remove('open');
-            }
-        });
     </script>
 </body>
+
 </html>

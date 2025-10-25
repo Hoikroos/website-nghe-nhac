@@ -760,8 +760,6 @@
                     });
                 });
             });
-
-            // Handle alert close buttons
             document.querySelectorAll('.close-btn').forEach(button => {
                 button.addEventListener('click', function () {
                     const alert = this.closest('.alert');
@@ -770,7 +768,6 @@
                 });
             });
 
-            // Auto-hide alerts after 5 seconds
             document.querySelectorAll('.alert').forEach(alert => {
                 setTimeout(() => {
                     alert.classList.add('fade-out');

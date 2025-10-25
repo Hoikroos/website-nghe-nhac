@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/musican/artists")
@@ -62,14 +63,28 @@ public class ArtistController {
     public String listArtists(
             @RequestParam(value = "keyword", required = false) String keyword,
             @RequestParam(value = "categoryId", required = false) Long categoryId,
-            Model model) {
-        List<Artist> artists = artistService.search(keyword, categoryId);
-        model.addAttribute("artists", artists);
-        model.addAttribute("keyword", keyword);
-        model.addAttribute("categoryId", categoryId);
-        model.addAttribute("categories", categoryService.findAll());
-        model.addAttribute("artist", new Artist());
-        model.addAttribute("showModal", false);
+            Model model,
+            RedirectAttributes redirectAttributes) {
+        try {
+            Account currentAccount = getCurrentAccount();
+
+            List<Artist> allArtists = artistService.search(keyword, categoryId);
+
+            List<Artist> artists = allArtists.stream()
+                    .filter(a -> a.getAccount() != null && a.getAccount().getId().equals(currentAccount.getId()))
+                    .collect(Collectors.toList());
+
+            model.addAttribute("artists", artists);
+            model.addAttribute("keyword", keyword);
+            model.addAttribute("categoryId", categoryId);
+            model.addAttribute("categories", categoryService.findAll());
+            model.addAttribute("artist", new Artist());
+            model.addAttribute("showModal", false);
+
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi: " + e.getMessage());
+            return "redirect:/musican/dashboard";
+        }
 
         return "Musican/artists";
     }

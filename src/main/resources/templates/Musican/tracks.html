@@ -595,8 +595,8 @@
                         <label for="searchSource">Nguồn</label>
                         <select id="searchSource" name="sourceType">
                             <option value="">Tất cả nguồn</option>
-                            <option value="UPLOAD" th:selected="${sourceType} == 'UPLOAD'">Upload</option>
-                            <option value="EXTERNAL" th:selected="${sourceType} == 'EXTERNAL'">External</option>
+                            <option value="UPLOAD" th:selected="${sourceType} == 'UPLOAD'">Tải từ máy</option>
+                            <option value="EXTERNAL" th:selected="${sourceType} == 'EXTERNAL'">Link ngoài</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -635,7 +635,7 @@
                             <td th:text="${track.title}"></td>
                             <td th:text="${track.album != null ? track.album.title : 'Không có'}"></td>
                             <td th:text="${track.duration}"></td>
-                            <td th:text="${track.sourceType}"></td>
+                            <td th:text="${track.sourceType.name() == 'EXTERNAL' ? 'Link ngoài' : 'Tải từ máy'}"></td>
                             <td>
                                 <button type="button" class="btn btn-primary"
                                     th:attr="onclick=|openEditModal('${track.id}', '${track.title}', '${track.album != null ? track.album.id : ''}', '${track.duration}', '${track.sourceType}', '${track.audioUrl}')|">

@@ -1,8 +1,13 @@
 package com.musical.musican.Controller.MUSICAN;
 
+import com.musical.musican.Model.Entity.Account;
 import com.musical.musican.Model.Entity.Track;
+import com.musical.musican.Service.AccountService;
 import com.musical.musican.Service.AlbumService;
 import com.musical.musican.Service.TrackService;
+
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,17 +25,28 @@ public class TrackController {
     @Autowired
     private AlbumService albumService;
 
+    @Autowired
+    private AccountService accountService;
+
     @GetMapping
     public String index(Model model,
             @RequestParam(value = "title", required = false) String title,
             @RequestParam(value = "albumId", required = false) Integer albumId,
             @RequestParam(value = "sourceType", required = false) String sourceType) {
+        try {
+            Account currentAccount = trackService.getCurrentAccount();
 
-        model.addAttribute("tracks", trackService.searchTracks(title, albumId, sourceType));
-        model.addAttribute("albums", albumService.findAll());
-        model.addAttribute("title", title);
-        model.addAttribute("albumId", albumId);
-        model.addAttribute("sourceType", sourceType);
+            List<Track> tracks = trackService.searchTracksByAccount(currentAccount, title, albumId, sourceType);
+
+            model.addAttribute("tracks", tracks);
+            model.addAttribute("albums", albumService.findByAccount(currentAccount));
+            model.addAttribute("title", title);
+            model.addAttribute("albumId", albumId);
+            model.addAttribute("sourceType", sourceType);
+
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", "Không thể tải danh sách bài hát: " + e.getMessage());
+        }
         return "Musican/tracks";
     }
 
@@ -48,6 +64,8 @@ public class TrackController {
             @RequestParam(value = "externalLink", required = false) String externalLink,
             RedirectAttributes redirectAttributes) {
         try {
+            track.setAccount(trackService.getCurrentAccount());
+
             if (fileUpload != null && !fileUpload.isEmpty()) {
                 String filePath = trackService.saveFile(fileUpload);
                 track.setAudioUrl(filePath);

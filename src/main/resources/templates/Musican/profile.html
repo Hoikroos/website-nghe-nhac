@@ -13,7 +13,7 @@
         :root {
             --background: #ffffff;
             --foreground: #1f2937;
-            --card: #f1f5f9;
+            --card: #f8fafc;
             --card-foreground: #1f2937;
             --primary: #1f2937;
             --primary-foreground: #ffffff;
@@ -28,7 +28,7 @@
             --border: #e5e7eb;
             --input: #ffffff;
             --ring: rgba(139, 92, 246, 0.5);
-            --radius: 0.5rem;
+            --radius: 0.75rem;
             --sidebar: #f1f5f9;
             --sidebar-foreground: #1f2937;
             --sidebar-primary: #1f2937;
@@ -36,6 +36,15 @@
             --sidebar-accent: #8b5cf6;
             --sidebar-accent-foreground: #ffffff;
             --sidebar-border: #e5e7eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --gradient-primary: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            --gradient-secondary: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
 
         * {
@@ -49,14 +58,16 @@
             background: var(--background);
             color: var(--foreground);
             line-height: 1.6;
+            overflow-x: hidden;
         }
 
         .dashboard-container {
             display: flex;
             min-height: 100vh;
+            position: relative;
         }
 
-        /* Sidebar */
+        /* Sidebar - Đã được cải thiện */
         .sidebar {
             width: 280px;
             background: var(--sidebar);
@@ -66,6 +77,8 @@
             height: 100vh;
             overflow-y: auto;
             transition: transform 0.3s ease;
+            z-index: 100;
+            box-shadow: var(--shadow-md);
         }
 
         .sidebar-header {
@@ -80,6 +93,10 @@
             font-size: 1.5rem;
             color: var(--sidebar-primary);
             margin-bottom: 0.5rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .sidebar-header p {
@@ -115,28 +132,60 @@
             text-decoration: none;
             transition: all 0.3s ease;
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: var(--sidebar-accent);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
         }
 
         .nav-item:hover {
             background: var(--background);
             color: var(--sidebar-accent);
+            transform: translateX(5px);
+        }
+
+        .nav-item:hover::before {
+            transform: scaleY(1);
         }
 
         .nav-item.active {
             background: var(--sidebar-accent);
             color: var(--sidebar-accent-foreground);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .nav-item.active::before {
+            transform: scaleY(1);
         }
 
         .nav-item i {
             width: 20px;
             margin-right: 0.75rem;
             font-size: 1rem;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-item:hover i {
+            transform: scale(1.1);
         }
 
         .user-info {
             padding: 1rem 1.5rem;
             border-top: 1px solid var(--sidebar-border);
             margin-top: auto;
+            background: var(--gradient-secondary);
+            border-radius: var(--radius);
+            margin: 1rem;
         }
 
         .user-avatar {
@@ -150,6 +199,7 @@
             color: var(--sidebar-accent-foreground);
             font-weight: 600;
             margin-bottom: 0.5rem;
+            box-shadow: var(--shadow-sm);
         }
 
         .user-name {
@@ -162,11 +212,13 @@
             color: var(--muted-foreground);
         }
 
-        /* Main Content */
+        /* Main Content - Đã được cải thiện */
         .main-content {
             flex: 1;
             margin-left: 280px;
             padding: 2rem;
+            background: var(--gradient-secondary);
+            min-height: 100vh;
         }
 
         .main-header {
@@ -183,10 +235,23 @@
             font-weight: 700;
             font-size: 2rem;
             color: var(--primary);
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .main-header h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--gradient-primary);
+            border-radius: 2px;
         }
 
         .btn {
-            padding: 0.5rem 1rem;
+            padding: 0.75rem 1.5rem;
             border: none;
             border-radius: var(--radius);
             font-size: 0.9rem;
@@ -197,28 +262,61 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
         }
 
         .btn-primary {
-            background: var(--accent);
+            background: var(--gradient-primary);
             color: var(--accent-foreground);
+            box-shadow: var(--shadow-md);
         }
 
         .btn-primary:hover {
-            background: #7c3aed;
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
         }
 
         .btn-secondary {
             background: var(--secondary);
             color: var(--secondary-foreground);
+            box-shadow: var(--shadow-sm);
         }
 
         .btn-secondary:hover {
             background: #4b5563;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
         }
 
-        /* Profile Content */
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--foreground);
+        }
+
+        .btn-outline:hover {
+            background: var(--muted);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Profile Content - Đã được cải thiện */
         .profile-grid {
             display: grid;
             grid-template-columns: 1fr 2fr;
@@ -232,6 +330,25 @@
             border-radius: var(--radius);
             border: 1px solid var(--border);
             height: fit-content;
+            box-shadow: var(--shadow-lg);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
+
+        .profile-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
         }
 
         .profile-avatar-section {
@@ -253,6 +370,15 @@
             margin: 0 auto 1rem;
             background-size: cover;
             background-position: center;
+            box-shadow: var(--shadow-lg);
+            border: 4px solid white;
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .profile-avatar-large:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-xl);
         }
 
         .profile-name {
@@ -277,6 +403,7 @@
             border-radius: 9999px;
             font-size: 0.8rem;
             font-weight: 500;
+            box-shadow: var(--shadow-sm);
         }
 
         .profile-status.active {
@@ -290,6 +417,14 @@
 
         .info-group {
             margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .info-group:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
         }
 
         .info-label {
@@ -297,6 +432,13 @@
             color: var(--muted-foreground);
             font-size: 0.9rem;
             margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-label i {
+            color: var(--accent);
         }
 
         .info-value {
@@ -304,12 +446,31 @@
             font-size: 1rem;
         }
 
-        /* Details Section */
+        /* Details Section - Đã được cải thiện */
         .details-section {
             background: var(--card);
             padding: 2rem;
             border-radius: var(--radius);
             border: 1px solid var(--border);
+            box-shadow: var(--shadow-lg);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .details-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
+
+        .details-section:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
         }
 
         .section-header {
@@ -324,6 +485,19 @@
             font-weight: 600;
             font-size: 1.25rem;
             color: var(--primary);
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 2px;
+            background: var(--gradient-primary);
+            border-radius: 2px;
         }
 
         .details-grid {
@@ -332,17 +506,46 @@
             gap: 1.5rem;
         }
 
-        /* Activity Timeline */
+        /* Activity Timeline - Đã được cải thiện */
         .activity-section {
             background: var(--card);
             padding: 2rem;
             border-radius: var(--radius);
             border: 1px solid var(--border);
             margin-top: 2rem;
+            box-shadow: var(--shadow-lg);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .activity-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
+
+        .activity-section:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
         }
 
         .activity-timeline {
             position: relative;
+        }
+
+        .activity-timeline::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border);
         }
 
         .activity-item {
@@ -367,10 +570,26 @@
             color: var(--accent-foreground);
             margin-right: 1rem;
             flex-shrink: 0;
+            z-index: 1;
+            box-shadow: var(--shadow-md);
+            transition: transform 0.3s ease;
+        }
+
+        .activity-item:hover .activity-icon {
+            transform: scale(1.1);
         }
 
         .activity-content {
             flex: 1;
+            background: var(--muted);
+            padding: 1rem;
+            border-radius: var(--radius);
+            transition: all 0.3s ease;
+        }
+
+        .activity-item:hover .activity-content {
+            background: var(--background);
+            box-shadow: var(--shadow-sm);
         }
 
         .activity-title {
@@ -383,7 +602,7 @@
             color: var(--muted-foreground);
         }
 
-        /* Modal */
+        /* Modal - Đã được cải thiện */
         .modal {
             display: none;
             position: fixed;
@@ -395,10 +614,23 @@
             z-index: 1000;
             align-items: center;
             justify-content: center;
+            padding: 1rem;
+            backdrop-filter: blur(5px);
         }
 
         .modal.show {
             display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         .modal-content {
@@ -406,9 +638,18 @@
             padding: 2rem;
             border-radius: var(--radius);
             width: 90%;
-            max-width: 600px;
+            max-width: 700px;
             max-height: 90vh;
             overflow-y: auto;
+            box-shadow: var(--shadow-xl);
+            transform: translateY(20px);
+            animation: slideUp 0.3s ease forwards;
+        }
+
+        @keyframes slideUp {
+            to {
+                transform: translateY(0);
+            }
         }
 
         .modal-header {
@@ -416,12 +657,14 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
         }
 
         .modal-title {
             font-family: 'Work Sans', sans-serif;
             font-weight: 600;
-            font-size: 1.25rem;
+            font-size: 1.5rem;
             color: var(--primary);
         }
 
@@ -431,10 +674,33 @@
             font-size: 1.5rem;
             cursor: pointer;
             color: var(--muted-foreground);
+            transition: color 0.3s ease, transform 0.3s ease;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            color: var(--destructive);
+            background: rgba(190, 18, 60, 0.1);
+            transform: rotate(90deg);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
         }
 
         .form-group {
             margin-bottom: 1.5rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
         }
 
         .form-group label {
@@ -442,18 +708,36 @@
             margin-bottom: 0.5rem;
             font-weight: 500;
             color: var(--foreground);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-group label i {
+            color: var(--accent);
         }
 
         .form-group input,
         .form-group select,
         .form-group textarea {
             width: 100%;
-            padding: 0.75rem;
+            padding: 0.75rem 1rem;
             border: 1px solid var(--border);
             border-radius: var(--radius);
             background: var(--input);
             color: var(--foreground);
             font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--ring), var(--shadow-sm);
+            transform: translateY(-2px);
         }
 
         .form-group textarea {
@@ -464,10 +748,13 @@
         .modal-actions {
             display: flex;
             gap: 1rem;
-            justify-content: end;
+            justify-content: flex-end;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
         }
 
-        /* Image Upload Styles */
+        /* Image Upload Styles - Đã được cải thiện */
         .image-upload-container {
             display: flex;
             flex-direction: column;
@@ -490,6 +777,13 @@
             position: relative;
             overflow: hidden;
             border: 2px dashed var(--border);
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-md);
+        }
+
+        .image-preview:hover {
+            border-color: var(--accent);
+            transform: scale(1.05);
         }
 
         .image-preview:hover::after {
@@ -536,10 +830,13 @@
             cursor: pointer;
             font-size: 0.9rem;
             transition: all 0.3s ease;
+            box-shadow: var(--shadow-sm);
         }
 
         .image-upload-btn:hover {
             background: #4b5563;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
         }
 
         .image-remove-btn {
@@ -550,25 +847,33 @@
             border: none;
             cursor: pointer;
             font-size: 0.8rem;
+            transition: all 0.3s ease;
         }
 
         .image-remove-btn:hover {
             text-decoration: underline;
+            transform: scale(1.05);
         }
 
-        /* Mobile Responsive */
+        /* Mobile Responsive - Đã được cải thiện */
         .mobile-menu-btn {
             display: none;
             position: fixed;
             top: 1rem;
             left: 1rem;
             z-index: 1000;
-            background: var(--accent);
+            background: var(--gradient-primary);
             color: var(--accent-foreground);
             border: none;
             padding: 0.75rem;
             border-radius: var(--radius);
             cursor: pointer;
+            box-shadow: var(--shadow-lg);
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu-btn:hover {
+            transform: scale(1.1);
         }
 
         @media (max-width: 768px) {
@@ -598,422 +903,397 @@
             .details-grid {
                 grid-template-columns: 1fr;
             }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                padding: 1.5rem;
+            }
+
+            .main-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .main-header h1::after {
+                width: 40px;
+            }
+        }
+
+        /* Notification & Alert Styles - Đã được cải thiện */
+        .alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1rem;
+            border-radius: var(--radius);
+            font-size: 0.95rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-lg);
+            animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            width: 350px;
+            max-width: 90%;
+            z-index: 1000;
+            border-left: 4px solid;
+            backdrop-filter: blur(10px);
+        }
+
+        .alert-success {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: #065f46;
+            border-color: #10b981;
+        }
+
+        .alert-error {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: #991b1b;
+            border-color: #ef4444;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            cursor: pointer;
+            color: inherit;
+            opacity: 0.7;
+            transition: all 0.3s ease;
+            padding: 0;
+            margin-left: 0.75rem;
+        }
+
+        .close-btn:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .alert.fade-out {
+            animation: fadeOut 0.3s ease forwards;
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+            to {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+
+        .required {
+            color: red;
+        }
+
+        .status-active {
+            color: #28a745;
+        }
+
+        .status-inactive {
+            color: #dc3545;
+        }
+
+        .image-preview-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .bio-text {
+            white-space: pre-wrap;
+            line-height: 1.6;
+            padding: 1rem;
+            background: var(--muted);
+            border-radius: var(--radius);
+            border-left: 3px solid var(--accent);
+        }
+
+        /* Thêm hiệu ứng loading */
+        .loading {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        /* Thêm hiệu ứng pulse cho các phần tử quan trọng */
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(139, 92, 246, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(139, 92, 246, 0);
+            }
+        }
+
+        /* Thêm hiệu ứng cho các thẻ khi hover */
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        /* Thêm hiệu ứng cho các nút icon */
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--muted);
+            color: var(--foreground);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .icon-btn:hover {
+            background: var(--accent);
+            color: var(--accent-foreground);
+            transform: scale(1.1);
         }
     </style>
 </head>
 
 <body>
     <div class="dashboard-container">
-        <!-- Mobile Menu Button -->
         <button class="mobile-menu-btn" onclick="toggleSidebar()">
             <i class="fas fa-bars"></i>
         </button>
         <div th:replace="~{/layout/slidesbarMusican}"></div>
-        <!-- Main Content -->
         <main class="main-content">
+            <div th:if="${message}" class="alert alert-success" role="alert">
+                <span th:text="${message}"></span>
+                <button type="button" class="close-btn">×</button>
+            </div>
+            <div th:if="${errorMessage}" class="alert alert-error" role="alert">
+                <span th:text="${errorMessage}"></span>
+                <button type="button" class="close-btn">×</button>
+            </div>
             <div class="main-header">
-                <h1>Hồ sơ nhân viên</h1>
+                <h1>Hồ sơ nhạc sĩ</h1>
                 <button class="btn btn-primary" onclick="openEditModal()">
-                    <i class="fas fa-edit"></i>
-                    Chỉnh sửa
+                    <i class="fas fa-edit"></i> Chỉnh sửa
                 </button>
             </div>
 
-            <!-- Profile Grid -->
             <div class="profile-grid">
-                <!-- Profile Card -->
                 <div class="profile-card">
                     <div class="profile-avatar-section">
-                        <div class="profile-avatar-large" id="profileAvatar">NV</div>
-                        <h2 class="profile-name" id="profileName">Nguyễn Văn A</h2>
-                        <p class="profile-position" id="profilePosition">Nhân viên IT</p>
-                        <span class="profile-status active">
-                            <i class="fas fa-circle"></i>
-                            Đang hoạt động
+                        <div class="profile-avatar-large"
+                            th:style="${user.avatar != null} ? 'background-image: url(' + @{${user.avatar}} + ')' : 'background-image: url(/images/default-avatar.png)'">
+                        </div>
+                        <h2 class="profile-name" th:text="${user.fullname}"></h2>
+                        <span class="profile-status">
+                            <i class="fas fa-circle"
+                                th:class="${user.active} ? 'status-active' : 'status-inactive'"></i>
+                            <span th:text="${user.active} ? 'Đang hoạt động' : 'Không hoạt động'"></span>
                         </span>
                     </div>
-
                     <div class="profile-info-section">
                         <div class="info-group">
                             <div class="info-label">Email</div>
-                            <div class="info-value" id="profileEmail">nguyenvana@company.com</div>
-                        </div>
-                        <div class="info-group">
-                            <div class="info-label">Số điện thoại</div>
-                            <div class="info-value" id="profilePhone">0123 456 789</div>
-                        </div>
-                        <div class="info-group">
-                            <div class="info-label">Phòng ban</div>
-                            <div class="info-value" id="profileDepartment">Công nghệ thông tin</div>
-                        </div>
-                        <div class="info-group">
-                            <div class="info-label">Ngày vào làm</div>
-                            <div class="info-value" id="profileStartDate">15/03/2023</div>
+                            <div class="info-value" th:text="${user.email}"></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Details Section -->
                 <div class="details-section">
                     <div class="section-header">
                         <h3 class="section-title">Thông tin chi tiết</h3>
                     </div>
                     <div class="details-grid">
                         <div class="info-group">
-                            <div class="info-label">Mã nhân viên</div>
-                            <div class="info-value" id="employeeId">EMP001</div>
-                        </div>
-                        <div class="info-group">
                             <div class="info-label">Chức vụ</div>
-                            <div class="info-value" id="employeePosition">Developer</div>
+                            <div class="info-value" th:text="${user.role == 'MUSICIAN' ? 'Người đăng' : 'Người dùng'}">
+                            </div>
                         </div>
                         <div class="info-group">
-                            <div class="info-label">Cấp độ</div>
-                            <div class="info-value" id="employeeLevel">Junior</div>
+                            <div class="info-label">Trạng thái</div>
+                            <div class="info-value" th:text="${user.active} ? 'Đang hoạt động' : 'Không hoạt động'">
+                            </div>
                         </div>
                         <div class="info-group">
-                            <div class="info-label">Quản lý trực tiếp</div>
-                            <div class="info-value" id="employeeManager">Trần Thị B</div>
+                            <div class="info-label">Ngày tạo</div>
+                            <div class="info-value" th:text="${#temporals.format(user.createdAt, 'dd/MM/yyyy')}"></div>
                         </div>
-                        <div class="info-group">
-                            <div class="info-label">Địa chỉ</div>
-                            <div class="info-value" id="employeeAddress">123 Đường ABC, Quận 1, TP.HCM</div>
-                        </div>
-                        <div class="info-group">
-                            <div class="info-label">Ngày sinh</div>
-                            <div class="info-value" id="employeeBirthday">01/01/1990</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Activity Timeline -->
-            <div class="activity-section">
-                <div class="section-header">
-                    <h3 class="section-title">Lịch sử hoạt động</h3>
-                </div>
-                <div class="activity-timeline">
-                    <div class="activity-item">
-                        <div class="activity-icon">
-                            <i class="fas fa-user-edit"></i>
-                        </div>
-                        <div class="activity-content">
-                            <div class="activity-title">Cập nhật thông tin hồ sơ</div>
-                            <div class="activity-time">2 giờ trước</div>
-                        </div>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-icon">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <div class="activity-content">
-                            <div class="activity-title">Chấm công vào làm</div>
-                            <div class="activity-time">8:30 AM hôm nay</div>
-                        </div>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-icon">
-                            <i class="fas fa-tasks"></i>
-                        </div>
-                        <div class="activity-content">
-                            <div class="activity-title">Hoàn thành dự án ABC</div>
-                            <div class="activity-time">1 ngày trước</div>
-                        </div>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-icon">
-                            <i class="fas fa-calendar"></i>
-                        </div>
-                        <div class="activity-content">
-                            <div class="activity-title">Tham gia cuộc họp team</div>
-                            <div class="activity-time">2 ngày trước</div>
+                        <div class="info-group full-width">
+                            <div class="info-label">Tiểu sử</div>
+                            <div class="info-value bio-text"
+                                th:text="${user.bio != null} ? ${user.bio} : 'Chưa có tiểu sử'"></div>
                         </div>
                     </div>
                 </div>
             </div>
         </main>
     </div>
-
-    <!-- Edit Profile Modal -->
     <div class="modal" id="editModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">Chỉnh sửa hồ sơ nhân viên</h3>
-                <button class="close-btn" onclick="closeEditModal()">&times;</button>
+                <h2 class="modal-title">Chỉnh sửa hồ sơ nhạc sĩ</h2>
+                <button class="close-btn" onclick="closeEditModal()">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
-            <form class="modal-form" onsubmit="saveProfile(event)">
-                <!-- Image Upload Section -->
+            <form id="profileForm" action="/musican/profile/update" method="POST" enctype="multipart/form-data">
                 <div class="image-upload-container">
-                    <div class="image-preview" id="imagePreview" onclick="document.getElementById('imageUpload').click()">
-                        <div class="image-preview-placeholder" id="imagePlaceholder">
-                            <i class="fas fa-camera"></i>
-                            <div>Chọn ảnh</div>
+                    <div class="image-preview" id="imagePreview">
+                        <div class="image-preview-placeholder" id="imagePreviewPlaceholder">
+                            <i class="fas fa-user"></i>
+                            <div>Ảnh đại diện</div>
                         </div>
+                        <img id="imagePreviewImg" class="image-preview-img" style="display: none;"
+                            th:src="@{${user.avatar}}" th:if="${user.avatar != null}">
                     </div>
-                    <input type="file" id="imageUpload" class="image-upload-input" accept="image/*" onchange="previewImage(event)">
-                    <button type="button" class="image-upload-btn" onclick="document.getElementById('imageUpload').click()">
-                        <i class="fas fa-upload"></i> Chọn ảnh
+                    <input type="file" id="avatar" name="avatar" class="image-upload-input" accept="image/*">
+                    <button type="button" class="image-upload-btn" onclick="document.getElementById('avatar').click()">
+                        <i class="fas fa-upload"></i> Tải ảnh lên
                     </button>
-                    <button type="button" class="image-remove-btn" id="removeImageBtn" onclick="removeImage()" style="display: none;">
-                        <i class="fas fa-times"></i> Xóa ảnh
+                    <button type="button" class="image-remove-btn" id="removeImageBtn"
+                        th:style="${user.avatar != null} ? 'display: inline-block' : 'display: none'">
+                        <i class="fas fa-trash"></i> Xóa ảnh
                     </button>
                 </div>
 
-                <div class="form-group">
-                    <label for="editName">Họ và tên *</label>
-                    <input type="text" id="editName" required>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="fullname">Họ và tên <span class="required">*</span></label>
+                        <input type="text" id="fullname" name="fullname" th:value="${user.fullname}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email <span class="required">*</span></label>
+                        <input type="email" id="email" name="email" th:value="${user.email}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bio">Tiểu sử / Giới thiệu</label>
+                        <textarea id="bio" name="bio" rows="4" placeholder="Giới thiệu ngắn về bản thân..."
+                            th:text="${user.bio}"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="active">Trạng thái <span class="required">*</span></label>
+                        <select id="active" name="active" required>
+                            <option value="true" th:selected="${user.active}">Đang hoạt động</option>
+                            <option value="false" th:selected="${!user.active}">Không hoạt động</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="editEmail">Email *</label>
-                    <input type="email" id="editEmail" required>
-                </div>
-                <div class="form-group">
-                    <label for="editPhone">Số điện thoại</label>
-                    <input type="tel" id="editPhone">
-                </div>
-                <div class="form-group">
-                    <label for="editPosition">Chức vụ</label>
-                    <input type="text" id="editPosition">
-                </div>
-                <div class="form-group">
-                    <label for="editDepartment">Phòng ban</label>
-                    <select id="editDepartment">
-                        <option value="IT">Công nghệ thông tin</option>
-                        <option value="HR">Nhân sự</option>
-                        <option value="Finance">Tài chính</option>
-                        <option value="Marketing">Marketing</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="editAddress">Địa chỉ</label>
-                    <textarea id="editAddress"></textarea>
-                </div>
+
                 <div class="modal-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Hủy</button>
+                    <button type="button" class="btn btn-outline" onclick="closeEditModal()">
+                        <i class="fas fa-times"></i> Hủy
+                    </button>
                     <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save"></i>
-                        Lưu thay đổi
+                        <i class="fas fa-save"></i> Lưu thay đổi
                     </button>
                 </div>
             </form>
         </div>
     </div>
-
     <script>
-        // Sample employee data
-        let currentEmployee = {
-            id: 'EMP001',
-            name: 'Nguyễn Văn A',
-            email: 'nguyenvana@company.com',
-            phone: '0123 456 789',
-            position: 'Developer',
-            department: 'IT',
-            level: 'Junior',
-            manager: 'Trần Thị B',
-            address: '123 Đường ABC, Quận 1, TP.HCM',
-            birthday: '01/01/1990',
-            startDate: '15/03/2023',
-            status: 'active',
-            avatar: null
-        };
-
-        // Initialize page
-        function init() {
-            loadEmployeeProfile();
-        }
-
-        // Load employee profile data
-        function loadEmployeeProfile() {
-            // Get employee ID from URL params or use default
-            const urlParams = new URLSearchParams(window.location.search);
-            const employeeId = urlParams.get('id') || 'EMP001';
-
-            // Load from localStorage or use sample data
-            const employees = JSON.parse(localStorage.getItem('employees') || '[]');
-            const employee = employees.find(emp => emp.id === employeeId) || currentEmployee;
-
-            // Update profile display
-            document.getElementById('profileName').textContent = employee.name;
-            document.getElementById('profilePosition').textContent = employee.position;
-            document.getElementById('profileEmail').textContent = employee.email;
-            document.getElementById('profilePhone').textContent = employee.phone;
-            document.getElementById('profileDepartment').textContent = getDepartmentName(employee.department);
-            document.getElementById('profileStartDate').textContent = employee.startDate;
-            document.getElementById('employeeId').textContent = employee.id;
-            document.getElementById('employeePosition').textContent = employee.position;
-            document.getElementById('employeeLevel').textContent = employee.level || 'Junior';
-            document.getElementById('employeeManager').textContent = employee.manager || 'Chưa có';
-            document.getElementById('employeeAddress').textContent = employee.address;
-            document.getElementById('employeeBirthday').textContent = employee.birthday || 'Chưa cập nhật';
-
-            // Update avatar
-            const avatar = document.getElementById('profileAvatar');
-            if (employee.avatar) {
-                avatar.style.backgroundImage = `url(${employee.avatar})`;
-                avatar.textContent = '';
-            } else {
-                avatar.style.backgroundImage = '';
-                avatar.textContent = employee.name.split(' ').map(n => n[0]).join('').toUpperCase();
-            }
-
-            currentEmployee = employee;
-        }
-
-        // Get department full name
-        function getDepartmentName(dept) {
-            const departments = {
-                'IT': 'Công nghệ thông tin',
-                'HR': 'Nhân sự',
-                'Finance': 'Tài chính',
-                'Marketing': 'Marketing'
-            };
-            return departments[dept] || dept;
-        }
-
-        // Modal functions
         function openEditModal() {
-            document.getElementById('editName').value = currentEmployee.name;
-            document.getElementById('editEmail').value = currentEmployee.email;
-            document.getElementById('editPhone').value = currentEmployee.phone;
-            document.getElementById('editPosition').value = currentEmployee.position;
-            document.getElementById('editDepartment').value = currentEmployee.department;
-            document.getElementById('editAddress').value = currentEmployee.address;
-            
-            // Set up image preview
-            const imagePreview = document.getElementById('imagePreview');
-            const imagePlaceholder = document.getElementById('imagePlaceholder');
-            const removeImageBtn = document.getElementById('removeImageBtn');
-            
-            if (currentEmployee.avatar) {
-                imagePreview.style.backgroundImage = `url(${currentEmployee.avatar})`;
-                imagePreview.classList.add('has-image');
-                imagePlaceholder.style.display = 'none';
-                removeImageBtn.style.display = 'block';
-            } else {
-                imagePreview.style.backgroundImage = '';
-                imagePreview.classList.remove('has-image');
-                imagePlaceholder.style.display = 'flex';
-                removeImageBtn.style.display = 'none';
-            }
-            
-            document.getElementById('editModal').classList.add('show');
+            document.getElementById('editModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
         }
 
         function closeEditModal() {
-            document.getElementById('editModal').classList.remove('show');
+            document.getElementById('editModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
         }
 
-        // Image preview function
-        function previewImage(event) {
-            const input = event.target;
-            const imagePreview = document.getElementById('imagePreview');
-            const imagePlaceholder = document.getElementById('imagePlaceholder');
-            const removeImageBtn = document.getElementById('removeImageBtn');
-            
-            if (input.files && input.files[0]) {
+        document.getElementById('avatar').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            const preview = document.getElementById('imagePreview');
+            if (file) {
                 const reader = new FileReader();
-                
-                reader.onload = function(e) {
-                    imagePreview.style.backgroundImage = `url(${e.target.result})`;
-                    imagePreview.classList.add('has-image');
-                    imagePlaceholder.style.display = 'none';
-                    removeImageBtn.style.display = 'block';
-                }
-                
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        // Remove image function
-        function removeImage() {
-            const imagePreview = document.getElementById('imagePreview');
-            const imagePlaceholder = document.getElementById('imagePlaceholder');
-            const removeImageBtn = document.getElementById('removeImageBtn');
-            const imageUpload = document.getElementById('imageUpload');
-            
-            imagePreview.style.backgroundImage = '';
-            imagePreview.classList.remove('has-image');
-            imagePlaceholder.style.display = 'flex';
-            removeImageBtn.style.display = 'none';
-            imageUpload.value = '';
-            
-            // Mark for deletion
-            currentEmployee.avatar = null;
-        }
-
-        function saveProfile(event) {
-            event.preventDefault();
-
-            // Update employee data
-            currentEmployee.name = document.getElementById('editName').value;
-            currentEmployee.email = document.getElementById('editEmail').value;
-            currentEmployee.phone = document.getElementById('editPhone').value;
-            currentEmployee.position = document.getElementById('editPosition').value;
-            currentEmployee.department = document.getElementById('editDepartment').value;
-            currentEmployee.address = document.getElementById('editAddress').value;
-            
-            // Handle image upload if a new file was selected
-            const imageUpload = document.getElementById('imageUpload');
-            if (imageUpload.files && imageUpload.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    currentEmployee.avatar = e.target.result;
-                    
-                    // Save to localStorage
-                    const employees = JSON.parse(localStorage.getItem('employees') || '[]');
-                    const index = employees.findIndex(emp => emp.id === currentEmployee.id);
-                    if (index !== -1) {
-                        employees[index] = currentEmployee;
-                    } else {
-                        employees.push(currentEmployee);
-                    }
-                    localStorage.setItem('employees', JSON.stringify(employees));
-                    
-                    // Refresh display
-                    loadEmployeeProfile();
-                    closeEditModal();
-                    alert('Cập nhật hồ sơ thành công!');
-                }
-                reader.readAsDataURL(imageUpload.files[0]);
-            } else {
-                // Save to localStorage
-                const employees = JSON.parse(localStorage.getItem('employees') || '[]');
-                const index = employees.findIndex(emp => emp.id === currentEmployee.id);
-                if (index !== -1) {
-                    employees[index] = currentEmployee;
-                } else {
-                    employees.push(currentEmployee);
-                }
-                localStorage.setItem('employees', JSON.stringify(employees));
-                
-                // Refresh display
-                loadEmployeeProfile();
-                closeEditModal();
-                alert('Cập nhật hồ sơ thành công!');
-            }
-        }
-
-        // Sidebar functions
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('open');
-        }
-
-        function logout() {
-            if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
-                window.location.href = 'index.html';
-            }
-        }
-
-        // Close modal when clicking outside
-        document.getElementById('editModal').addEventListener('click', function (e) {
-            if (e.target === this) {
-                closeEditModal();
+                reader.onload = function (e) {
+                    preview.innerHTML = `<img src="${e.target.result}" alt="Preview" class="image-preview-img">`;
+                };
+                reader.readAsDataURL(file);
             }
         });
+        document.getElementById('removeImageBtn').addEventListener('click', function () {
+            document.getElementById('avatar').value = "";
+            document.getElementById('imagePreview').innerHTML = `
+                <div class="image-preview-placeholder">
+                    <i class="fas fa-user"></i><div>Ảnh đại diện</div>
+                </div>`;
+            this.style.display = 'none';
+        });
+        window.onclick = function (event) {
+            const modal = document.getElementById('editModal');
+            if (event.target == modal) closeEditModal();
+        }
+        document.querySelectorAll('.close-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const alert = this.closest('.alert');
+                alert.classList.add('fade-out');
+                setTimeout(() => alert.remove(), 300);
+            });
+        });
 
-        // Initialize when page loads
-        window.addEventListener('load', init);
+        document.querySelectorAll('.alert').forEach(alert => {
+            setTimeout(() => {
+                alert.classList.add('fade-out');
+                setTimeout(() => alert.remove(), 300);
+            }, 2000);
+        });
     </script>
 </body>
 

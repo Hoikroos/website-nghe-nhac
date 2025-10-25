@@ -7,16 +7,466 @@
     <title>MusicManager - Quản lý nhân viên</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="/css/styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 </head>
+<style>
+    .alert {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1rem;
+        border-radius: var(--radius);
+        font-size: 0.95rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        width: 350px;
+        max-width: 90%;
+        z-index: 1000;
+        border-left: 4px solid;
+    }
+
+    .alert-success {
+        background-color: rgba(16, 185, 129, 0.1);
+        color: #065f46;
+        border-color: #10b981;
+    }
+
+    .alert-error {
+        background-color: rgba(239, 68, 68, 0.1);
+        color: #991b1b;
+        border-color: #ef4444;
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        font-size: 1.1rem;
+        cursor: pointer;
+        color: inherit;
+        opacity: 0.7;
+        transition: all 0.3s ease;
+        padding: 0;
+        margin-left: 0.75rem;
+    }
+
+    .close-btn:hover {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    .alert.fade-out {
+        animation: fadeOut 0.3s ease forwards;
+    }
+
+    @keyframes fadeOut {
+        from {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        to {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+    }
+
+    #viewEmployeeModal.modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(5px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    #viewEmployeeModal.modal[style*="display:block"] {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    #viewEmployeeModal .modal-content {
+        background: white;
+        border-radius: 20px;
+        width: 100%;
+        max-width: 520px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        transform: translateY(-30px) scale(0.95);
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    #viewEmployeeModal.modal[style*="display:block"] .modal-content {
+        transform: translateY(0) scale(1);
+        overflow-y: auto;
+    }
+
+    #viewEmployeeModal .modal-header {
+        background: linear-gradient(135deg, #4361ee 0%, #3a56d4 100%);
+        color: white;
+        padding: 2rem 2rem 1.5rem 2rem;
+        position: relative;
+        border-bottom: none;
+        text-align: center;
+    }
+
+    #viewEmployeeModal .employee-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        margin: 0 auto 1rem auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 4px solid white;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        position: relative;
+        overflow: hidden;
+    }
+
+    #viewEmployeeModal .employee-avatar i {
+        font-size: 2.5rem;
+        color: white;
+    }
+
+    #viewEmployeeModal .employee-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+
+    #viewEmployeeModal .employee-name {
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin: 0.5rem 0 0.25rem 0;
+        font-family: 'Work Sans', sans-serif;
+    }
+
+    #viewEmployeeModal .employee-role {
+        font-size: 0.9rem;
+        opacity: 0.9;
+        margin: 0;
+        font-weight: 500;
+    }
+
+    #viewEmployeeModal .modal-header .close {
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+        font-size: 1.75rem;
+        cursor: pointer;
+        color: white;
+        opacity: 0.8;
+        transition: all 0.3s ease;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        z-index: 10;
+    }
+
+    #viewEmployeeModal .modal-header .close:hover {
+        opacity: 1;
+        background: rgba(255, 255, 255, 0.25);
+        transform: rotate(90deg);
+    }
+
+    #viewEmployeeModal .modal-body {
+        padding: 2rem;
+        background: #fafbfc;
+    }
+
+    #viewEmployeeModal .info-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    #viewEmployeeModal .info-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        background: white;
+        border-radius: 12px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+        transition: all 0.3s ease;
+    }
+
+    #viewEmployeeModal .info-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+        border-color: #4361ee;
+    }
+
+    #viewEmployeeModal .info-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #4361ee15 0%, #3a56d415 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        color: #4361ee;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+    }
+
+    #viewEmployeeModal .info-content {
+        flex: 1;
+    }
+
+    #viewEmployeeModal .info-label {
+        font-size: 0.8rem;
+        color: #6b7280;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.25rem;
+    }
+
+    #viewEmployeeModal .info-value {
+        font-size: 1rem;
+        color: #1f2937;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    #viewEmployeeModal .status-section {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+    }
+
+    #viewEmployeeModal .status-section h3 {
+        margin: 0 0 1rem 0;
+        font-size: 1.1rem;
+        color: #374151;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    #viewEmployeeModal .status-section h3 i {
+        color: #4361ee;
+    }
+
+    #viewEmployeeModal .form-select {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid #d1d5db;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        background: white;
+        color: #374151;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        background-size: 16px;
+        font-weight: 500;
+    }
+
+    #viewEmployeeModal .form-select:focus {
+        outline: none;
+        border-color: #4361ee;
+        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+    }
+
+    #viewEmployeeModal .modal-footer {
+        padding: 1.5rem 2rem;
+        background: white;
+        border-top: 1px solid #e5e7eb;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    #viewEmployeeModal .employee-id {
+        font-size: 0.85rem;
+        color: #6b7280;
+        font-weight: 500;
+    }
+
+    #viewEmployeeModal .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        min-width: 100px;
+        justify-content: center;
+    }
+
+    #viewEmployeeModal .btn-secondary {
+        background: #6b7280;
+        color: white;
+    }
+
+    #viewEmployeeModal .btn-secondary:hover {
+        background: #4b5563;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+    }
+
+    #viewEmployeeModal .btn-primary {
+        background: linear-gradient(135deg, #4361ee 0%, #3a56d4 100%);
+        color: white;
+        border: none;
+    }
+
+    #viewEmployeeModal .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4);
+    }
+
+    /* Animation khi mở modal */
+    @keyframes modalSlideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-30px) scale(0.95);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+        #viewEmployeeModal .modal-content {
+            max-width: 90%;
+            margin: 0 auto;
+        }
+
+        #viewEmployeeModal .modal-body {
+            padding: 1.5rem;
+        }
+
+        #viewEmployeeModal .modal-header {
+            padding: 1.5rem;
+        }
+
+        #viewEmployeeModal .employee-avatar {
+            width: 80px;
+            height: 80px;
+        }
+
+        #viewEmployeeModal .employee-avatar i {
+            font-size: 2rem;
+        }
+
+        #viewEmployeeModal .info-item {
+            flex-direction: column;
+            text-align: center;
+            padding: 1.25rem;
+        }
+
+        #viewEmployeeModal .info-icon {
+            margin-right: 0;
+            margin-bottom: 0.75rem;
+        }
+
+        #viewEmployeeModal .modal-footer {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+
+        #viewEmployeeModal .btn {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 480px) {
+        #viewEmployeeModal .modal-content {
+            max-width: 95%;
+            border-radius: 16px;
+        }
+
+        #viewEmployeeModal .modal-body {
+            padding: 1.25rem;
+        }
+
+        #viewEmployeeModal .modal-header {
+            padding: 1.25rem;
+        }
+
+        #viewEmployeeModal .modal-header h2 {
+            font-size: 1.3rem;
+        }
+
+        #viewEmployeeModal .employee-avatar {
+            width: 70px;
+            height: 70px;
+        }
+    }
+</style>
 
 <body>
     <div th:replace="~{/layout/slidesbarAdmin}"></div>
+
     <main class="main-content">
+        <div th:if="${message}" class="alert alert-success" role="alert">
+            <span th:text="${message}"></span>
+            <button type="button" class="close-btn">×</button>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-error" role="alert">
+            <span th:text="${errorMessage}"></span>
+            <button type="button" class="close-btn">×</button>
+        </div>
         <div class="page-header">
             <h1>Quản lý nhân viên</h1>
             <button class="btn btn-primary" onclick="openEmployeeModal()">
-                <i class="fas fa-plus"></i>
-                Thêm nhân viên
+                <i class="fas fa-plus"></i> Thêm nhân viên
             </button>
         </div>
 
@@ -49,15 +499,18 @@
                                         th:text="${employee.active} ? 'Hoạt động' : 'Không hoạt động'"></span>
                                 </td>
                                 <td>
-                                    <button class="btn btn-secondary"
-                                        th:onclick="'viewEmployee(' + ${employee.id} + ')'"
-                                        style="margin-right: 0.5rem;">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn btn-danger"
-                                        th:onclick="'deleteEmployee(' + ${employee.id} + ')'">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
+                                    <form th:action="@{'/admin/employees/view/' + ${employee.id}}" method="get"
+                                        style="display:inline;">
+                                        <button type="submit" class="btn btn-secondary" style="margin-right:0.5rem;">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </form>
+                                    <form th:action="@{'/admin/employees/delete/' + ${employee.id}}" method="post"
+                                        style="display:inline;" class="delete-form">
+                                        <button type="submit" class="btn btn-danger delete-btn">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                         </tbody>
@@ -67,28 +520,31 @@
         </div>
     </main>
 
-    <!-- Employee Modal -->
     <div id="employeeModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 id="modalTitle">Thêm nhân viên mới</h2>
+                <h2>Thêm nhân viên mới</h2>
                 <span class="close" onclick="closeEmployeeModal()">&times;</span>
             </div>
-            <form id="employeeForm" class="modal-form" onsubmit="saveEmployee(event)">
+            <form th:action="@{/admin/employees/add}" method="post" class="modal-form">
                 <div class="form-group">
-                    <label for="employeeName">Họ tên *</label>
-                    <input type="text" id="employeeName" name="name" required>
+                    <label for="employeeName">Tên tài khoản:</label>
+                    <input type="text" id="employeeName" name="username" required>
                 </div>
                 <div class="form-group">
-                    <label for="employeeEmail">Email *</label>
+                    <label for="employeeName">Họ và tên:</label>
+                    <input type="text" id="employeeName" name="fullname" required>
+                </div>
+                <div class="form-group">
+                    <label for="employeeEmail">Email:</label>
                     <input type="email" id="employeeEmail" name="email" required>
                 </div>
                 <div class="form-group">
-                    <label for="employeePassword">Mật khẩu *</label>
+                    <label for="employeePassword">Mật khẩu:</label>
                     <input type="password" id="employeePassword" name="password" required>
                 </div>
                 <div class="form-group">
-                    <label for="employeeConfirmPassword">Nhập lại mật khẩu *</label>
+                    <label for="employeeConfirmPassword">Nhập lại mật khẩu:</label>
                     <input type="password" id="employeeConfirmPassword" name="confirmPassword" required>
                 </div>
                 <div class="form-actions">
@@ -98,42 +554,139 @@
             </form>
         </div>
     </div>
-    <div id="viewEmployeeModal" class="modal">
+
+    <div id="viewEmployeeModal" class="modal" th:if="${showViewModal}"
+        th:attr="style=${showViewModal} ? 'display:block' : 'display:none'">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Chi tiết nhân viên</h2>
-                <span class="close" onclick="closeViewEmployeeModal()">&times;</span>
+                <span class="close" onclick="closeViewModal()">&times;</span>
+                <div class="employee-avatar">
+                    <th:block th:if="${viewEmployee.avatar}">
+                        <img th:src="${viewEmployee.avatar}" alt="Avatar">
+                    </th:block>
+                    <th:block th:unless="${viewEmployee.avatar}">
+                        <i class="fas fa-user"></i>
+                    </th:block>
+                </div>
             </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label>Ảnh đại diện:</label>
-                    <div class="employee-image-container">
-                        <img id="viewEmployeeImage" src="/images/default-avatar.png" alt="Ảnh nhân viên"
-                            class="employee-image">
+            <div class="modal-body" th:if="${viewEmployee != null}">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-label">Tên đăng nhập</div>
+                            <div class="info-value" th:text="${viewEmployee.username}"></div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-label">Họ và tên</div>
+                            <div class="info-value" th:text="${viewEmployee.fullname}"></div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-label">Email</div>
+                            <div class="info-value" th:text="${viewEmployee.email}"></div>
+                        </div>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label>Họ tên:</label>
-                    <p id="viewEmployeeName"></p>
-                </div>
-                <div class="form-group">
-                    <label>Email:</label>
-                    <p id="viewEmployeeEmail"></p>
-                </div>
-                <div class="form-group">
-                    <label for="viewEmployeeStatus">Trạng thái:</label>
-                    <select id="viewEmployeeStatus" name="status" onchange="updateEmployeeStatus()">
-                        <option value="true">Hoạt động</option>
-                        <option value="false">Không hoạt động</option>
-                    </select>
+                <div class="status-section">
+                    <h3><i class="fas fa-toggle-on"></i> Trạng thái tài khoản</h3>
+                    <form th:action="@{'/admin/employees/update-status/' + ${viewEmployee.id}}" method="post">
+                        <select name="active" class="form-select">
+                            <option th:value="true" th:selected="${viewEmployee.active}">🟢 Hoạt động</option>
+                            <option th:value="false" th:selected="${!viewEmployee.active}">🔴 Không hoạt động</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-sync-alt"></i>
+                            Cập nhật trạng thái
+                        </button>
+                    </form>
                 </div>
             </div>
-            <div class="form-actions">
-                <button type="button" class="btn btn-secondary" onclick="closeViewEmployeeModal()">Đóng</button>
+            <div class="modal-footer">
+                <div class="employee-id">
+                    ID: <span th:text="${viewEmployee.id}"></span>
+                </div>
+                <button type="button" class="btn btn-secondary" onclick="closeViewModal()">
+                    <i class="fas fa-times"></i>
+                    Đóng
+                </button>
             </div>
         </div>
     </div>
-    <script src="/js/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const viewModal = document.getElementById("viewEmployeeModal");
+
+        function closeViewModal() {
+            viewModal.style.display = "none";
+        }
+        const modal = document.getElementById("employeeModal");
+
+        function openEmployeeModal() {
+            modal.style.display = "block";
+        }
+
+        function closeEmployeeModal() {
+            modal.style.display = "none";
+        }
+
+        function searchEmployees() {
+            const input = document.getElementById("searchInput").value.toLowerCase();
+            const rows = document.querySelectorAll("#employeeTableBody tr");
+
+            rows.forEach(row => {
+                const name = row.querySelector("td:nth-child(1)").textContent.toLowerCase();
+                const email = row.querySelector("td:nth-child(2)").textContent.toLowerCase();
+                row.style.display = name.includes(input) || email.includes(input) ? "" : "none";
+            });
+        }
+        document.querySelectorAll('.close-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const alert = this.closest('.alert');
+                if (alert) {
+                    alert.classList.add('fade-out');
+                    setTimeout(() => alert.remove(), 300);
+                }
+            });
+        });
+
+        document.querySelectorAll('.alert').forEach(alert => {
+            setTimeout(() => {
+                alert.classList.add('fade-out');
+                setTimeout(() => alert.remove(), 300);
+            }, 2000);
+        });
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function (e) {
+                e.preventDefault();
+                const form = this.closest('.delete-form');
+                Swal.fire({
+                    title: 'Xác nhận xóa',
+                    text: 'Hành động này không thể hoàn tác!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#ef4444',
+                    cancelButtonColor: '#6b7280',
+                    confirmButtonText: 'Xóa',
+                    cancelButtonText: 'Hủy'
+                }).then((result) => {
+                    if (result.isConfirmed) form.submit();
+                });
+            });
+        });
+    </script>
+
 </body>
 
 </html>

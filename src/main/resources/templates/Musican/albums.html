@@ -1138,12 +1138,9 @@
 
                             <div class="preview-container">
                                 <span class="preview-label">Xem trước:</span>
-                                <!-- Ảnh hiện tại (khi chỉnh sửa) -->
                                 <img id="albumCoverPreview" th:if="${album != null and album.coverUrl != null}"
                                     th:src="@{${album.coverUrl}}" class="preview-image">
-                                <!-- Ảnh xem trước (khi chọn file mới) -->
                                 <img id="albumCoverPreviewEmpty" src="" class="preview-image" style="display:none;">
-                                <!-- Placeholder khi không có ảnh -->
                                 <div id="noPreview" th:unless="${album != null and album.coverUrl != null}"
                                     class="preview-placeholder"
                                     style="display: flex; align-items: center; justify-content: center; width: 200px; height: 150px; background: var(--muted); border-radius: var(--radius); color: var(--muted-foreground);">

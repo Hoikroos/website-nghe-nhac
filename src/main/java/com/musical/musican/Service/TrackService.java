@@ -1,13 +1,12 @@
 package com.musical.musican.Service;
 
+import com.musical.musican.Model.Entity.Account;
 import com.musical.musican.Model.Entity.Track;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface TrackService {
     List<Track> getAllTracks();
-
-    List<Track> searchTracks(String title, Integer albumId, String sourceType);
 
     Track getTrackById(Integer id);
 
@@ -22,4 +21,9 @@ public interface TrackService {
     Track update(Integer id, Track trackData, MultipartFile fileUpload, String externalLink);
 
     String saveFile(MultipartFile file);
+
+    Account getCurrentAccount();
+
+    List<Track> searchTracksByAccount(Account account, String title, Integer albumId, String sourceType);
+
 }

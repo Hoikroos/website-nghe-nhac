@@ -13,7 +13,7 @@ import jakarta.validation.Valid;
 import java.util.Optional;
 
 @Controller
-@RequestMapping("/musican/categories")
+@RequestMapping("/admin/categories")
 public class CategoriesController {
 
     @Autowired
@@ -55,7 +55,7 @@ public class CategoriesController {
             model.addAttribute("categories", categoryService.getAllCategories());
             return "Musican/categories";
         }
-        return "redirect:/musican/categories";
+        return "redirect:/admin/categories";
     }
     @GetMapping("/edit/{id}")
     public String showEditCategoryForm(@PathVariable("id") Integer id, Model model) {
@@ -96,7 +96,7 @@ public class CategoriesController {
             model.addAttribute("categories", categoryService.getAllCategories());
             return "Musican/categories";
         }
-        return "redirect:/musican/categories";
+        return "redirect:/admin/categories";
     }
     @PostMapping("/delete/{id}")
     public String deleteCategory(@PathVariable("id") Integer id, RedirectAttributes redirectAttributes) {
@@ -106,6 +106,6 @@ public class CategoriesController {
         } catch (IllegalArgumentException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
-        return "redirect:/musican/categories";
+        return "redirect:/admin/categories";
     }
 }

@@ -19,6 +19,10 @@ public class Album {
     private Integer id;
 
     @ManyToOne
+    @JoinColumn(name = "account_id", nullable = false)
+    private Account account;
+
+    @ManyToOne
     @JoinColumn(name = "artist_id", nullable = false)
     private Artist artist;
 

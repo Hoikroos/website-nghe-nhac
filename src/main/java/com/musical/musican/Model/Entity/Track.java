@@ -26,6 +26,10 @@ public class Track {
 
     private Integer duration; // giây
 
+     @ManyToOne
+    @JoinColumn(name = "account_id", nullable = false)
+    private Account account;
+
     @Lob
     private String audioUrl;
 

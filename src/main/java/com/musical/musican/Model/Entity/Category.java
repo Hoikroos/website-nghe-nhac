@@ -2,6 +2,8 @@ package com.musical.musican.Model.Entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -22,7 +24,9 @@ public class Category {
     @Lob
     private String description;
 
+    @Column(name = "created_at")
+    private LocalDateTime createdAt = LocalDateTime.now();
+
     @OneToMany(mappedBy = "category")
     private List<Artist> artists;
 }
-

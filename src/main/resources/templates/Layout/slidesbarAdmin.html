@@ -6,7 +6,7 @@
     <div class="sidebar-nav">
         <div class="nav-group">
             <div class="nav-group-title">Tổng quan</div>
-            <a th:href="@{/admin/dashboard}" class="nav-item active">
+            <a th:href="@{/admin/dashboard}" class="nav-item">
                 <i class="fas fa-home"></i>
                 Dashboard
             </a>
@@ -17,10 +17,7 @@
                 <i class="fas fa-users"></i>
                 Quản lý nhân viên
             </a>
-        </div>
-        <div class="nav-group">
-            <div class="nav-group-title">Quản lý</div>
-            <a th:href="@{/admin/employees}" class="nav-item">
+            <a th:href="@{/admin/categories}" class="nav-item">
                 <i class="fas fa-tag"></i>
                 Quản lý thể loại
             </a>
@@ -34,9 +31,10 @@
         </div>
     </div>
     <div class="user-info">
-        <div class="user-avatar" id="userAvatar">
+        <div class="user-avatar">
             <img th:if="${session.currentUser != null and session.currentUser.avatar != null}"
-                th:src="@{${session.currentUser.avatar}}" alt="Avatar" class="avatar-img" style="width: 50px; height: 50px;border-radius: 50%;"/>
+                th:src="@{${session.currentUser.avatar}}" alt="Avatar" class="avatar-img"
+                style="width: 50px; height: 50px;border-radius: 50%;" />
         </div>
         <div class=" user-name" id="userName" th:text="${session.username}">Admin User
         </div>

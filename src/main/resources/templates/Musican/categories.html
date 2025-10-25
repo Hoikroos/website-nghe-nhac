@@ -10,157 +10,45 @@
         rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
     <style>
         :root {
-            --background: #ffffff;
-            --foreground: #1f2937;
-            --card: #f1f5f9;
-            --card-foreground: #1f2937;
-            --primary: #1f2937;
-            --primary-foreground: #ffffff;
-            --secondary: #6b7280;
-            --secondary-foreground: #ffffff;
-            --muted: #f1f5f9;
-            --muted-foreground: #6b7280;
-            --accent: #8b5cf6;
-            --accent-foreground: #ffffff;
-            --destructive: #be123c;
-            --destructive-foreground: #ffffff;
-            --border: #e5e7eb;
-            --input: #ffffff;
-            --ring: rgba(139, 92, 246, 0.5);
-            --radius: 0.5rem;
-            --sidebar: #f1f5f9;
-            --sidebar-foreground: #1f2937;
-            --sidebar-primary: #1f2937;
-            --sidebar-primary-foreground: #ffffff;
-            --sidebar-accent: #8b5cf6;
-            --sidebar-accent-foreground: #ffffff;
-            --sidebar-border: #e5e7eb;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+            --primary-color: #4361ee;
+            --primary-light: #eef2ff;
+            --secondary-color: #6c757d;
+            --success-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --dark-color: #1e293b;
+            --light-color: #f8fafc;
+            --gray-color: #94a3b8;
+            --border-radius: 12px;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s ease;
         }
 
         body {
-            font-family: 'Open Sans', sans-serif;
-            background: var(--background);
-            color: var(--foreground);
+            background-color: #f1f5f9;
+            color: var(--dark-color);
             line-height: 1.6;
         }
 
-        .dashboard-container {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* Sidebar styles */
-        .sidebar {
-            width: 280px;
-            background: var(--sidebar);
-            border-right: 1px solid var(--sidebar-border);
-            padding: 1.5rem 0;
+        .mobile-menu-btn {
+            display: none;
             position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-        }
-
-        .sidebar-header {
-            padding: 0 1.5rem 2rem;
-            border-bottom: 1px solid var(--sidebar-border);
-            margin-bottom: 1.5rem;
-        }
-
-        .sidebar-header h1 {
-            font-family: 'Work Sans', sans-serif;
-            font-weight: 700;
-            font-size: 1.5rem;
-            color: var(--sidebar-primary);
-            margin-bottom: 0.5rem;
-        }
-
-        .sidebar-nav {
-            padding: 0 1rem;
-        }
-
-        .nav-group {
-            margin-bottom: 2rem;
-        }
-
-        .nav-group-title {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--muted-foreground);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 0.75rem;
-            padding: 0 0.5rem;
-        }
-
-        .nav-item {
-            display: flex;
-            align-items: center;
-            padding: 0.75rem 0.5rem;
-            margin-bottom: 0.25rem;
-            border-radius: var(--radius);
-            color: var(--sidebar-foreground);
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .nav-item:hover {
-            background: var(--background);
-            color: var(--sidebar-accent);
-        }
-
-        .nav-item.active {
-            background: var(--sidebar-accent);
-            color: var(--sidebar-accent-foreground);
-        }
-
-        .nav-item i {
-            width: 20px;
-            margin-right: 0.75rem;
-            font-size: 1rem;
-        }
-
-        .user-info {
-            padding: 1rem 1.5rem;
-            border-top: 1px solid var(--sidebar-border);
-            margin-top: auto;
-        }
-
-        .user-avatar {
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
             width: 40px;
             height: 40px;
-            border-radius: 50%;
-            background: var(--sidebar-accent);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--sidebar-accent-foreground);
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .user-name {
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-        }
-
-        .user-role {
-            font-size: 0.8rem;
-            color: var(--muted-foreground);
-        }
-
-        /* Main content styles */
-        .main-content {
-            flex: 1;
-            margin-left: 280px;
-            padding: 2rem;
+            cursor: pointer;
+            box-shadow: var(--shadow-md);
         }
 
         .main-header {
@@ -169,74 +57,46 @@
             align-items: center;
             margin-bottom: 2rem;
             padding-bottom: 1rem;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid #e2e8f0;
         }
 
         .main-header h1 {
             font-family: 'Work Sans', sans-serif;
             font-weight: 700;
-            font-size: 2rem;
-            color: var(--primary);
+            color: var(--dark-color);
+            font-size: 1.8rem;
         }
 
-        .btn {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: var(--radius);
-            font-size: 0.9rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-primary {
-            background: var(--accent);
-            color: var(--accent-foreground);
-        }
-
-        .btn-primary:hover {
-            background: #7c3aed;
-            transform: translateY(-1px);
-        }
-
-        .btn-secondary {
-            background: var(--secondary);
-            color: var(--secondary-foreground);
-        }
-
-        .btn-danger {
-            background: var(--destructive);
-            color: var(--destructive-foreground);
-        }
-
-        .btn-sm {
-            padding: 0.375rem 0.75rem;
-            font-size: 0.8rem;
-        }
-
-        /* Categories grid */
         .categories-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 1.5rem;
-            margin-bottom: 2rem;
         }
 
         .category-card {
-            background: var(--card);
+            background: white;
+            border-radius: var(--border-radius);
             padding: 1.5rem;
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            transition: all 0.3s ease;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            border: 1px solid #e2e8f0;
+            position: relative;
+            overflow: hidden;
         }
 
         .category-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .category-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary-color), #8b5cf6);
         }
 
         .category-header {
@@ -247,15 +107,15 @@
         }
 
         .category-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: var(--radius);
-            background: var(--accent);
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: var(--primary-light);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--accent-foreground);
-            font-size: 1.5rem;
+            color: var(--primary-color);
+            font-size: 1.2rem;
         }
 
         .category-actions {
@@ -266,76 +126,69 @@
         .category-title {
             font-family: 'Work Sans', sans-serif;
             font-weight: 600;
-            font-size: 1.25rem;
-            color: var(--primary);
-            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
+            margin-bottom: 0.75rem;
+            color: var(--dark-color);
         }
 
         .category-description {
-            color: var(--muted-foreground);
-            margin-bottom: 1rem;
+            color: var(--secondary-color);
+            font-size: 0.9rem;
             line-height: 1.5;
         }
 
-        .category-stats {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 1rem;
-            border-top: 1px solid var(--border);
-        }
-
-        .category-count {
-            font-size: 0.9rem;
-            color: var(--muted-foreground);
-        }
-
-        /* Modal styles */
         .modal {
-            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
+            display: flex;
             align-items: center;
             justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
         }
 
         .modal.show {
-            display: flex;
+            opacity: 1;
+            visibility: visible;
         }
 
         .modal-content {
-            background: var(--background);
-            padding: 2rem;
-            border-radius: var(--radius);
+            background: white;
+            border-radius: var(--border-radius);
             width: 90%;
             max-width: 500px;
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-20px);
+            transition: var(--transition);
+        }
+
+        .modal.show .modal-content {
+            transform: translateY(0);
         }
 
         .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.5rem;
         }
 
         .modal-title {
             font-family: 'Work Sans', sans-serif;
             font-weight: 600;
-            font-size: 1.25rem;
-            color: var(--primary);
+            font-size: 1.3rem;
+            color: var(--dark-color);
         }
 
-        .close-btn {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: var(--muted-foreground);
+        .modal-body {
+            padding: 1.5rem;
         }
 
         .form-group {
@@ -345,65 +198,39 @@
         .form-group label {
             display: block;
             margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: var(--foreground);
+            font-weight: 600;
+            color: var(--dark-color);
         }
 
         .form-group input,
         .form-group textarea {
             width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            background: var(--input);
-            color: var(--foreground);
-            font-size: 1rem;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-family: 'Open Sans', sans-serif;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
         }
 
         .form-group textarea {
-            resize: vertical;
             min-height: 100px;
+            resize: vertical;
         }
 
         .modal-actions {
             display: flex;
-            gap: 1rem;
             justify-content: flex-end;
-        }
-
-        /* Mobile responsive */
-        .mobile-menu-btn {
-            display: none;
-            position: fixed;
-            top: 1rem;
-            left: 1rem;
-            z-index: 1000;
-            background: var(--accent);
-            color: var(--accent-foreground);
-            border: none;
-            padding: 0.75rem;
-            border-radius: var(--radius);
-            cursor: pointer;
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                display: none;
-            }
-
-            .main-content {
-                margin-left: 0;
-                padding: 1rem;
-                padding-top: 4rem;
-            }
-
-            .mobile-menu-btn {
-                display: block;
-            }
-
-            .categories-grid {
-                grid-template-columns: 1fr;
-            }
+            gap: 1rem;
+            padding: 1.5rem;
+            border-top: 1px solid #e2e8f0;
         }
 
         .alert {
@@ -428,14 +255,14 @@
 
         .alert-success {
             background-color: rgba(16, 185, 129, 0.1);
-            color: var(--success-green-dark);
-            border-color: var(--success-green);
+            color: #065f46;
+            border-color: var(--success-color);
         }
 
         .alert-error {
             background-color: rgba(239, 68, 68, 0.1);
-            color: var(--danger-red-dark);
-            border-color: var(--danger-red);
+            color: #7f1d1d;
+            border-color: var(--danger-color);
         }
 
         .close-btn {
@@ -486,52 +313,49 @@
 </head>
 
 <body>
-    <div class="dashboard-container">
-        <button class="mobile-menu-btn">
-            <i class="fas fa-bars"></i>
-        </button>
-        <div th:replace="~{/layout/slidesbarMusican}"></div>
-        <main class="main-content">
-            <div class="main-header">
-                <h1>Quản lý thể loại</h1>
-                <a th:href="@{/musican/categories/add}" class="btn btn-primary" onclick="openModal()">
-                    <i class="fas fa-plus"></i>
-                    Thêm thể loại
-                </a>
+    <div th:replace="~{/layout/slidesbarAdmin}"></div>
+    <main class="main-content">
+        <div class="main-header">
+            <h1>Quản lý thể loại</h1>
+            <a href="#" class="btn btn-primary" onclick="openModal()">
+                <i class="fas fa-plus"></i>
+                Thêm thể loại
+            </a>
+        </div>
+        <div class="categories-grid">
+            <div th:if="${message}" class="alert alert-success" role="alert">
+                <span th:text="${message}"></span>
+                <button type="button" class="close-btn">×</button>
             </div>
-            <div class="categories-grid">
-                <div th:if="${message}" class="alert alert-success" role="alert">
-                    <span th:text="${message}"></span>
-                    <button type="button" class="close-btn">×</button>
-                </div>
-                <div th:if="${errorMessage}" class="alert alert-error" role="alert">
-                    <span th:text="${errorMessage}"></span>
-                    <button type="button" class="close-btn">×</button>
-                </div>
-                <div th:each="category : ${categories}" class="category-card">
-                    <div class="category-header">
-                        <div class="category-icon">
-                            <i class="fas fa-music"></i>
-                        </div>
-                        <div class="category-actions">
-                            <a th:href="@{/musican/categories/edit/{id}(id=${category.id})}"
-                                class="btn btn-sm btn-secondary" onclick="openModal()">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            <form th:action="@{/musican/categories/delete/{id}(id=${category.id})}" method="post"
-                                class="delete-form">
-                                <button type="submit" class="btn btn-sm btn-danger delete-btn">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </form>
-                        </div>
+            <div th:if="${errorMessage}" class="alert alert-error" role="alert">
+                <span th:text="${errorMessage}"></span>
+                <button type="button" class="close-btn">×</button>
+            </div>
+            <div th:each="category : ${categories}" class="category-card">
+                <div class="category-header">
+                    <div class="category-icon">
+                        <i class="fas fa-music"></i>
                     </div>
-                    <h3 class="category-title" th:text="${category.name}"></h3>
-                    <p class="category-description" th:text="${category.description} ?: 'Chưa có mô tả'"></p>
+                    <div class="category-actions">
+                        <a th:href="@{/admin/categories/edit/{id}(id=${category.id})}" class="btn btn-sm btn-secondary"
+                            onclick="openModal()">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <form th:action="@{/admin/categories/delete/{id}(id=${category.id})}" method="post"
+                            class="delete-form">
+                            <button type="submit" class="btn btn-sm btn-danger delete-btn">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
                 </div>
+                <h3 class="category-title" th:text="${category.name}"></h3>
+                <p class="category-description" th:text="${category.description} ?: 'Chưa có mô tả'"></p>
             </div>
-        </main>
-    </div>
+        </div>
+    </main>
+
+    <!-- Modal Thêm/Sửa thể loại -->
     <div class="modal" id="categoryModal" th:classappend="${showModal} ? 'show' : ''">
         <div class="modal-content">
             <div class="modal-header">
@@ -539,8 +363,7 @@
                 <button class="close-btn"
                     onclick="document.getElementById('categoryModal').classList.remove('show')">&times;</button>
             </div>
-            <form
-                th:action="${isEdit} ? @{/musican/categories/edit/{id}(id=${category.id})} : @{/musican/categories/add}"
+            <form th:action="${isEdit} ? @{/admin/categories/edit/{id}(id=${category.id})} : @{/admin/categories/add}"
                 method="post">
                 <div class="form-group">
                     <label for="categoryName">Tên thể loại *</label>
@@ -551,7 +374,7 @@
                     <textarea id="categoryDescription" name="description" th:text="${category.description}"></textarea>
                 </div>
                 <div class="modal-actions">
-                    <a th:href="@{/musican/categories}" class="btn btn-secondary">Hủy</a>
+                    <a th:href="@{/admin/categories}" class="btn btn-secondary">Hủy</a>
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-save"></i>
                         Lưu
